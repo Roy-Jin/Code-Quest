@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply select-none;
+  }
+}
+
+/* Global Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-slate-700, #334155);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-slate-500, #64748b);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-slate-700, #334155) transparent;
+}
+
+@keyframes coin-spin {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+@keyframes coin-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-coin {
+  animation: coin-spin 2s linear infinite, coin-float 2s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
