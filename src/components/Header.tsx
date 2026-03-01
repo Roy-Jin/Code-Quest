@@ -47,13 +47,12 @@ export function Header({
     <header className="h-14 border-b border-slate-800 bg-slate-900 flex items-center justify-between px-4 shrink-0 z-[60]">
       <div className="flex items-center gap-2 md:gap-4">
         {showHomeButton && (
-          <button 
+          <TooltipButton
+            icon={<Home size={20} />}
+            tooltip={t.backToHome}
             onClick={onHomeClick}
             className="p-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 rounded-md transition-colors"
-            title={t.backToHome}
-          >
-            <Home size={20} />
-          </button>
+          />
         )}
         <div className={`flex items-center gap-2 text-cyan-400 ${showHomeButton ? 'hidden md:flex' : 'flex'}`}>
           <Terminal size={24} />

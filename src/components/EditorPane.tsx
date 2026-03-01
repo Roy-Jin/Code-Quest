@@ -121,7 +121,7 @@ export function EditorPane({
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative">
         {/* Monaco Editor */}
         <div className={`absolute inset-0 ${activeTab === 'code' ? 'block' : 'hidden'}`}>
           <Editor

@@ -139,13 +139,13 @@ export function GameGrid({ t, lang, levelConfig, position, collectedCoins, moveC
             className={`w-8 h-8 border rounded-full shadow-sm transition-colors ${showCommands ? 'bg-blue-600 text-white border-blue-500' : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-cyan-400 hover:border-cyan-500/50'}`}
           />
           {onOpenEditor && (
-            <button
+            <TooltipButton
+              icon={<Code2 size={16} />}
+              tooltip="Open Editor"
               onClick={onOpenEditor}
+              tooltipAlign="right"
               className="md:hidden w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-full shadow-sm transition-colors ml-1"
-              title="Open Editor"
-            >
-              <Code2 size={16} />
-            </button>
+            />
           )}
         </div>
         
