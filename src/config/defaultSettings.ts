@@ -4,7 +4,9 @@ export interface Settings {
   fontSize: number;
   minimap: boolean;
   wordWrap: boolean;
+  musicEnabled: boolean;
   musicVolume: number;
+  sfxEnabled: boolean;
   sfxVolume: number;
   lineNumbers: boolean;
   cursorBlinking: 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';
@@ -13,6 +15,10 @@ export interface Settings {
   folding: boolean;
   bracketPairColorization: boolean;
   formatOnType: boolean;
+  // Game settings
+  autoShowObjectives: boolean;
+  showTooltips: boolean;
+  defaultRobotSpeed: number;
 }
 
 export interface GameProgress {
@@ -32,8 +38,10 @@ export const DEFAULT_SETTINGS: Settings = {
   fontSize: 16,
   minimap: false,
   wordWrap: true,
-  musicVolume: 60,
-  sfxVolume: 100,
+  musicEnabled: true,
+  musicVolume: 40,
+  sfxEnabled: true,
+  sfxVolume: 60,
   lineNumbers: true,
   cursorBlinking: 'smooth',
   cursorStyle: 'line',
@@ -41,6 +49,10 @@ export const DEFAULT_SETTINGS: Settings = {
   folding: true,
   bracketPairColorization: true,
   formatOnType: false,
+  // Game settings
+  autoShowObjectives: true,
+  showTooltips: true,
+  defaultRobotSpeed: 400,
 };
 
 export const DEFAULT_PROGRESS: GameProgress = {

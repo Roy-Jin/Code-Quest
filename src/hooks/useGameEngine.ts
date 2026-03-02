@@ -2,12 +2,8 @@ import { useState, useRef } from 'react';
 import * as Babel from '@babel/standalone';
 // @ts-ignore
 import Interpreter from 'js-interpreter';
-import { Position, LevelConfig, Direction } from '../types';
-
-interface Action {
-  type: string;
-  payload?: any;
-}
+import { Position, LevelConfig, Direction, GameState, CoinSystem, Coin } from '../types';
+import { audioManager } from '../utils/audioManager';
 
 const getInitialRotation = (dir: Direction) => {
   if (dir === 'N') return 0;
@@ -17,15 +13,16 @@ const getInitialRotation = (dir: Direction) => {
   return 0;
 };
 
-export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () => void) {
+export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () => void, defaultSpeed: number = 400) {
   const [position, setPosition] = useState<Position>({ ...levelConfig.startPos, rotation: getInitialRotation(levelConfig.startPos.dir) });
-  const [collectedCoins, setCollectedCoins] = useState<string[]>([]);
+  const [score, setScore] = useState(0);
+  const [visibleCoins, setVisibleCoins] = useState<Map<string, Coin>>(new Map());
   const [logs, setLogs] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [moveCount, setMoveCount] = useState(0);
-  const [speed, setSpeedState] = useState(400);
+  const [speed, setSpeedState] = useState(defaultSpeed);
   const [isPaused, setIsPaused] = useState(false);
   const runIdRef = useRef(0);
   const isPausedRef = useRef(false);
@@ -50,16 +47,15 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
     let currentPos = { ...levelConfig.startPos, rotation: getInitialRotation(levelConfig.startPos.dir) };
     setPosition(currentPos);
     
-    let currentCollected: string[] = [];
-    setCollectedCoins([]);
-    
+    // Initialize game state using OOP
+    const gameState = new GameState(levelConfig.coins);
+    setScore(0);
+    setVisibleCoins(gameState.visibleCoins);
     setIsSuccess(false);
-    
-    let currentMoveCount = 0;
     setMoveCount(0);
     
-    let currentSpeed = 400;
-    setSpeedState(400);
+    let currentSpeed = defaultSpeed;
+    setSpeedState(defaultSpeed);
 
     let transpiledCode = '';
     try {
@@ -73,6 +69,7 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
 
     const walls = levelConfig.walls || [];
     const coins = levelConfig.coins || [];
+    const pressurePlates = levelConfig.pressurePlates || [];
 
     const waitForPause = async () => {
       while (isPausedRef.current) {
@@ -90,8 +87,8 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
             await new Promise(resolve => setTimeout(resolve, currentSpeed));
             await waitForPause();
 
-            currentMoveCount++;
-            setMoveCount(currentMoveCount);
+            gameState.incrementMoveCount();
+            setMoveCount(gameState.moveCount);
             setLogs(prev => [...prev, 'moveForward()']);
             
             let newX = currentPos.x;
@@ -109,6 +106,32 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
               }
               currentPos = { ...currentPos, x: newX, y: newY };
               setPosition(currentPos);
+              
+              // Check for coin collection using OOP
+              const coinKey = CoinSystem.getCoinKey(newX, newY);
+              const visibleCoin = gameState.visibleCoins.get(coinKey);
+              
+              if (visibleCoin) {
+                const collected = gameState.collectCoin(visibleCoin);
+                if (collected) {
+                  setScore(gameState.score);
+                  setVisibleCoins(new Map(gameState.visibleCoins));
+                  const points = CoinSystem.getScore(visibleCoin.tier);
+                  setLogs(prev => [...prev, `Coin collected! +${points} points (Total: ${gameState.score})`]);
+                  
+                  // Play coin collection sound effect
+                  audioManager.playSoundEffect('coinGet');
+                }
+              }
+              
+              // Check for pressure plate activation
+              const plate = pressurePlates.find(p => p.x === newX && p.y === newY);
+              if (plate) {
+                const tierNames = { 1: 'Wood', 2: 'Silver', 3: 'Gold', 4: 'Diamond' };
+                setLogs(prev => [...prev, `${tierNames[plate.tier]} pressure plate activated! Resetting ${tierNames[plate.tier]} coins...`]);
+                gameState.resetCoinsByTier(coins, plate.tier);
+                setVisibleCoins(new Map(gameState.visibleCoins));
+              }
             } else {
               setError(t.hitWall);
               setIsRunning(false);
@@ -167,29 +190,6 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
         }));
       }
 
-      if (levelConfig.availableCommands.includes('collectCoin')) {
-        interpreter.setProperty(globalObject, 'collectCoin', interpreter.createAsyncFunction(async (callback: any) => {
-          try {
-            await waitForPause();
-            await new Promise(resolve => setTimeout(resolve, Math.min(currentSpeed / 2, 100)));
-            await waitForPause();
-            
-            setLogs(prev => [...prev, 'collectCoin()']);
-            const coinExists = coins.some(c => c.x === currentPos.x && c.y === currentPos.y);
-            const coinKey = `${currentPos.x},${currentPos.y}`;
-            if (coinExists && !currentCollected.includes(coinKey)) {
-              currentCollected = [...currentCollected, coinKey];
-              setCollectedCoins(currentCollected);
-            } else {
-              setLogs(prev => [...prev, t.noCoin || 'No coin here']);
-            }
-            
-            callback();
-            runLoop();
-          } catch (e) {}
-        }));
-      }
-
       if (levelConfig.availableCommands.includes('log')) {
         const consoleObj = interpreter.nativeToPseudo({});
         interpreter.setProperty(globalObject, 'console', consoleObj);
@@ -227,7 +227,7 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
       if (levelConfig.availableCommands.includes('getObjectives')) {
         interpreter.setProperty(globalObject, 'getObjectives', interpreter.createNativeFunction(() => {
           return interpreter.nativeToPseudo({
-            requiredCoins: levelConfig.victoryConditions?.requiredCoins ?? levelConfig.coins.length,
+            requiredScore: levelConfig.victoryConditions?.requiredScore ?? 0,
             maxMoves: levelConfig.victoryConditions?.maxMoves ?? -1
           });
         }));
@@ -235,7 +235,7 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
 
       if (levelConfig.availableCommands.includes('getCurrentState')) {
         interpreter.setProperty(globalObject, 'getCurrentState', interpreter.createNativeFunction(() => {
-          return interpreter.nativeToPseudo({ collectedCoins: currentCollected.length, moves: currentMoveCount });
+          return interpreter.nativeToPseudo({ score: gameState.score, moves: gameState.moveCount });
         }));
       }
 
@@ -312,13 +312,13 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
       
       if (currentPos.x === levelConfig.targetPos.x && currentPos.y === levelConfig.targetPos.y) {
         const conditions = levelConfig.victoryConditions || {};
-        const requiredCoins = conditions.requiredCoins ?? coins.length;
+        const requiredScore = conditions.requiredScore ?? 0;
         const maxMoves = conditions.maxMoves;
 
-        if (currentCollected.length < requiredCoins) {
-          setError(t.missedCoins);
-        } else if (maxMoves !== undefined && currentMoveCount > maxMoves) {
-          setError(`${t.tooManyMoves} (Used: ${currentMoveCount}, Max: ${maxMoves})`);
+        if (gameState.score < requiredScore) {
+          setError(`${t.missedCoins || 'Not enough score!'} (Score: ${gameState.score}/${requiredScore})`);
+        } else if (maxMoves !== undefined && gameState.moveCount > maxMoves) {
+          setError(`${t.tooManyMoves} (Used: ${gameState.moveCount}, Max: ${maxMoves})`);
         } else {
           setIsSuccess(true);
           onSuccess();
@@ -337,13 +337,15 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
     isPausedRef.current = false;
     setIsPaused(false);
     setPosition({ ...levelConfig.startPos, rotation: getInitialRotation(levelConfig.startPos.dir) });
-    setCollectedCoins([]);
+    setScore(0);
+    const gameState = new GameState(levelConfig.coins);
+    setVisibleCoins(gameState.visibleCoins);
     setLogs([]);
     setError(null);
     setIsSuccess(false);
     setIsRunning(false);
     setMoveCount(0);
-    setSpeedState(400);
+    setSpeedState(defaultSpeed);
   };
 
   const forceReset = (newConfig: LevelConfig) => {
@@ -351,14 +353,16 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
     isPausedRef.current = false;
     setIsPaused(false);
     setPosition({ ...newConfig.startPos, rotation: getInitialRotation(newConfig.startPos.dir) });
-    setCollectedCoins([]);
+    setScore(0);
+    const gameState = new GameState(newConfig.coins);
+    setVisibleCoins(gameState.visibleCoins);
     setLogs([]);
     setError(null);
     setIsSuccess(false);
     setIsRunning(false);
     setMoveCount(0);
-    setSpeedState(400);
+    setSpeedState(defaultSpeed);
   };
 
-  return { position, collectedCoins, logs, error, isRunning, isPaused, isSuccess, runCode, togglePause, reset, forceReset, moveCount, speed };
+  return { position, score, visibleCoins, logs, error, isRunning, isPaused, isSuccess, runCode, togglePause, reset, forceReset, moveCount, speed };
 }

@@ -10,7 +10,10 @@ export const LEVELS: LevelConfig[] = [
     walls: [],
     coins: [],
     availableCommands: ['moveForward', 'log', 'getGrid', 'getRobotState', 'getObjectives', 'getCurrentState', 'setSpeed', 'getSpeed'],
-    defaultCode: "// Level 1\n// Use moveForward() to reach the target!\n\n// moveForward()\n// moveForward()\n// moveForward()\n// moveForward()",
+    defaultCode: {
+      en: "// Level 1\n// Use moveForward() to reach the target!\n\n// moveForward()\n// moveForward()\n// moveForward()\n// moveForward()",
+      zh: "// 关卡 1\n// 使用 moveForward() 到达目标点！\n\n// moveForward()\n// moveForward()\n// moveForward()\n// moveForward()"
+    },
     victoryConditions: { maxMoves: 4 },
     difficulty: 0
   },
@@ -25,7 +28,10 @@ export const LEVELS: LevelConfig[] = [
     ],
     coins: [],
     availableCommands: ['moveForward', 'turnRight', 'turnLeft', 'log', 'getGrid', 'getRobotState', 'getObjectives', 'getCurrentState', 'setSpeed', 'getSpeed'],
-    defaultCode: "// Level 2\n// Watch out for the walls!\n\n",
+    defaultCode: {
+      en: "// Level 2\n// Watch out for the walls!\n\n",
+      zh: "// 关卡 2\n// 小心墙壁！\n\n"
+    },
     victoryConditions: { maxMoves: 10 },
     difficulty: 1
   },
@@ -39,11 +45,15 @@ export const LEVELS: LevelConfig[] = [
       { x: 2, y: 0 }, { x: 2, y: 1 }, { x: 2, y: 2 }, { x: 2, y: 3 }
     ],
     coins: [
-      { x: 0, y: 5 }, { x: 3, y: 0}
+      { x: 0, y: 5, tier: 1 }, // Wood
+      { x: 3, y: 0, tier: 1 }  // Wood
     ],
-    availableCommands: ['moveForward', 'turnRight', 'turnLeft', 'collectCoin', 'log', 'getGrid', 'getRobotState', 'getObjectives', 'getCurrentState', 'setSpeed', 'getSpeed'],
-    defaultCode: "// Level 3\n// Collect all coins before reaching the target!\n// Use collectCoin() to collect a coin at the current position.\n\n",
-    victoryConditions: { requiredCoins: 2 },
+    availableCommands: ['moveForward', 'turnRight', 'turnLeft', 'log', 'getGrid', 'getRobotState', 'getObjectives', 'getCurrentState', 'setSpeed', 'getSpeed'],
+    defaultCode: {
+      en: "// Level 3\n// Collect all coins before reaching the target!\n// Coins are collected automatically when you move onto them.\n// Wood coins = 1 point each\n\n",
+      zh: "// 关卡 3\n// 在到达目标前收集所有金币！\n// 移动到金币上会自动收集。\n// 木质金币 = 每个 1 分\n\n"
+    },
+    victoryConditions: { requiredScore: 2 },
     difficulty: 2
   },
   {
@@ -57,11 +67,15 @@ export const LEVELS: LevelConfig[] = [
       { x: 3, y: 2 }, { x: 3, y: 3 }, { x: 3, y: 4 }, { x: 3, y: 5 }
     ],
     coins: [
-      { x: 2, y: 0 }, { x: 4, y: 5 }
+      { x: 2, y: 0, tier: 1 }, // Wood
+      { x: 4, y: 5, tier: 1 }  // Wood
     ],
-    availableCommands: ['moveForward', 'turnRight', 'turnLeft', 'collectCoin', 'log', 'getGrid', 'getRobotState', 'getObjectives', 'getCurrentState', 'setSpeed', 'getSpeed'],
-    defaultCode: "// Level 4\n// Navigate the zig-zag path!\n\n",
-    victoryConditions: { requiredCoins: 2, maxMoves: 18 },
+    availableCommands: ['moveForward', 'turnRight', 'turnLeft', 'log', 'getGrid', 'getRobotState', 'getObjectives', 'getCurrentState', 'setSpeed', 'getSpeed'],
+    defaultCode: {
+      en: "// Level 4\n// Navigate the zig-zag path!\n// Coins are collected automatically.\n\n",
+      zh: "// 关卡 4\n// 穿越 Z 字形路径！\n// 金币会自动收集。\n\n"
+    },
+    victoryConditions: { requiredScore: 2, maxMoves: 18 },
     difficulty: 2
   },
   {
@@ -71,31 +85,63 @@ export const LEVELS: LevelConfig[] = [
     startPos: { x: 0, y: 9, dir: 'N' },
     targetPos: { x: 8, y: 0 },
     walls: [
-      // Outer boundaries (optional, but good for maze structure)
       { x: 0, y: 4 },
-
       { x: 1, y: 9 }, { x: 1, y: 8 }, { x: 1, y: 7 }, { x: 1, y: 6 },
       { x: 1, y: 4 }, { x: 1, y: 3 }, { x: 1, y: 2 }, { x: 1, y: 1 },
-      
       { x: 3, y: 8 }, { x: 3, y: 7 }, { x: 3, y: 6 }, { x: 3, y: 5 },
       { x: 3, y: 4 }, { x: 3, y: 2 }, { x: 3, y: 1 }, { x: 3, y: 0 },
-
       { x: 4, y: 2},
-      
       { x: 5, y: 9 }, { x: 5, y: 8 }, { x: 5, y: 6 }, { x: 5, y: 5 },
       { x: 5, y: 4 }, { x: 5, y: 3 }, { x: 5, y: 2 }, { x: 5, y: 1 },
-      
       { x: 7, y: 8 }, { x: 7, y: 7 }, { x: 7, y: 6 }, { x: 7, y: 5 },
       { x: 7, y: 4 }, { x: 7, y: 3 }, { x: 7, y: 2 }, { x: 7, y: 1 }, { x: 7, y: 0 },
-      
       { x: 8, y: 2 }, { x: 8, y: 8 }, { x: 9, y: 5 }
     ],
     coins: [
-      { x: 0, y: 3 }, { x: 4, y: 1}, { x: 4, y: 9 }, { x: 8, y: 5 }
+      { x: 0, y: 3, tier: 1 }, // Wood
+      { x: 4, y: 1, tier: 2 }, // Silver
+      { x: 4, y: 9, tier: 1 }, // Wood
+      { x: 8, y: 5, tier: 2 }  // Silver
     ],
-    availableCommands: ['moveForward', 'turnRight', 'turnLeft', 'collectCoin', 'log', 'getGrid', 'getRobotState', 'getObjectives', 'getCurrentState', 'setSpeed', 'getSpeed'],
-    defaultCode: "// Level 5\n// Find your way through the complex 10x10 maze!\n// Hint: You might want to write a function to help you navigate.\n\n",
-    victoryConditions: { requiredCoins: 4 },
+    availableCommands: ['moveForward', 'turnRight', 'turnLeft', 'log', 'getGrid', 'getRobotState', 'getObjectives', 'getCurrentState', 'setSpeed', 'getSpeed'],
+    defaultCode: {
+      en: "// Level 5\n// Find your way through the complex 10x10 maze!\n// Wood coins = 1 point, Silver coins = 5 points\n// Hint: You might want to write a function to help you navigate.\n\n",
+      zh: "// 关卡 5\n// 找到穿越复杂 10x10 迷宫的路径！\n// 木质金币 = 1 分，银质金币 = 5 分\n// 提示：你可能需要编写一个函数来帮助导航。\n\n"
+    },
+    victoryConditions: { requiredScore: 12 },
+    difficulty: 3
+  },
+  {
+    id: 'level-6',
+    name: { en: 'Treasure Hunter', zh: '寻宝猎人' },
+    gridSize: 8,
+    startPos: { x: 0, y: 0, dir: 'E' },
+    targetPos: { x: 7, y: 7 },
+    walls: [
+      { x: 2, y: 1 }, { x: 2, y: 2 }, { x: 2, y: 3 }, { x: 2, y: 4 },
+      { x: 4, y: 1 }, { x: 4, y: 2 },
+      { x: 5, y: 4 }, { x: 5, y: 5 }, { x: 5, y: 6 },
+      { x: 1, y: 6 }, { x: 2, y: 6 }
+    ],
+    coins: [
+      { x: 1, y: 1, tier: 1 }, // Wood
+      { x: 3, y: 2, tier: 2 }, // Silver
+      { x: 6, y: 3, tier: 1 }, // Wood
+      { x: 3, y: 5, tier: 3 }, // Gold
+      { x: 6, y: 6, tier: 4 }  // Diamond
+    ],
+    pressurePlates: [
+      { x: 0, y: 3, tier: 1 }, // Resets Wood coins
+      { x: 0, y: 5, tier: 2 }, // Resets Silver coins
+      { x: 7, y: 1, tier: 3 }, // Resets Gold coins
+      { x: 7, y: 3, tier: 4 }  // Resets Diamond coins
+    ],
+    availableCommands: ['moveForward', 'turnRight', 'turnLeft', 'log', 'getGrid', 'getRobotState', 'getObjectives', 'getCurrentState', 'setSpeed', 'getSpeed'],
+    defaultCode: {
+      en: "// Level 6 - Treasure Hunter\n// Wood = 1pt, Silver = 5pts, Gold = 15pts, Diamond = 25pts\n// Pressure plates reset coins of matching tier!\n// Wood plate (0,3), Silver (0,5), Gold (7,1), Diamond (7,3)\n// Strategy: Reset and collect high-value coins multiple times!\n\n",
+      zh: "// 关卡 6 - 寻宝猎人\n// 木质 = 1分，银质 = 5分，金质 = 15分，钻石 = 25分\n// 压力板会重置对应等级的金币！\n// 木质板 (0,3)，银质 (0,5)，金质 (7,1)，钻石 (7,3)\n// 策略：重置并多次收集高价值金币！\n\n"
+    },
+    victoryConditions: { requiredScore: 70 },
     difficulty: 3
   }
 ];

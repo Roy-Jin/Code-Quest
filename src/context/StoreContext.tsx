@@ -7,6 +7,7 @@ import {
   DEFAULT_PROGRESS, 
   DEFAULT_STORE_STATE 
 } from '../config/defaultSettings';
+import { audioManager } from '../utils/audioManager';
 
 interface StoreContextType {
   settings: Settings;
@@ -49,6 +50,21 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       console.error('Failed to save store to localStorage:', error);
     }
   }, [state]);
+
+  // Sync audio settings with audioManager
+  useEffect(() => {
+    audioManager.updateSettings({
+      musicEnabled: state.settings.musicEnabled,
+      musicVolume: state.settings.musicVolume,
+      sfxEnabled: state.settings.sfxEnabled,
+      sfxVolume: state.settings.sfxVolume,
+    });
+  }, [
+    state.settings.musicEnabled,
+    state.settings.musicVolume,
+    state.settings.sfxEnabled,
+    state.settings.sfxVolume,
+  ]);
 
   const updateSettings = (newSettings: Partial<Settings>) => {
     setState(prev => ({

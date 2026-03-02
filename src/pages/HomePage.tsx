@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Play, Settings, Info, Github } from 'lucide-react';
-import { LEVELS, TRANSLATIONS } from '../config';
+import { Play, Settings, Info } from 'lucide-react';
+import { LEVELS, TRANSLATIONS, createHoverAnimation } from '../config';
 import { BackgroundGrid } from '../components/BackgroundGrid';
 import { GameGrid } from '../components/GameGrid';
-import { TooltipButton } from '../components/TooltipButton';
+import { PageTransition } from '../components/PageTransition';
 import { useStore } from '../context/StoreContext';
+import { Direction, Position } from '../types';
+import { audioManager } from '../utils/audioManager';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -16,92 +18,86 @@ export function HomePage() {
   // Demo Animation Logic
   const demoLevel = LEVELS[3]; // Level 4
   const [demoPosition, setDemoPosition] = useState(demoLevel.startPos);
-  const [demoCoins, setDemoCoins] = useState<string[]>([]);
-  
-  useEffect(() => {
-    // Path: South 4, East 2, North 4, Collect, East 2, South 5, Collect, East 1
-    const path = [
-      // Start (0,0) E
-      { x: 0, y: 0, rotation: 90, dir: 'E' as const },
-      // Turn S
-      { x: 0, y: 0, rotation: 180, dir: 'S' as const },
-      // South 4
-      { x: 0, y: 1, rotation: 180, dir: 'S' as const },
-      { x: 0, y: 2, rotation: 180, dir: 'S' as const },
-      { x: 0, y: 3, rotation: 180, dir: 'S' as const },
-      { x: 0, y: 4, rotation: 180, dir: 'S' as const },
-      // Turn E
-      { x: 0, y: 4, rotation: 90, dir: 'E' as const },
-      // East 2
-      { x: 1, y: 4, rotation: 90, dir: 'E' as const },
-      { x: 2, y: 4, rotation: 90, dir: 'E' as const },
-      // Turn N
-      { x: 2, y: 4, rotation: 0, dir: 'N' as const },
-      // North 4
-      { x: 2, y: 3, rotation: 0, dir: 'N' as const },
-      { x: 2, y: 2, rotation: 0, dir: 'N' as const },
-      { x: 2, y: 1, rotation: 0, dir: 'N' as const },
-      { x: 2, y: 0, rotation: 0, dir: 'N' as const },
-      // Turn E
-      { x: 2, y: 0, rotation: 90, dir: 'E' as const },
-      // East 2
-      { x: 3, y: 0, rotation: 90, dir: 'E' as const },
-      { x: 4, y: 0, rotation: 90, dir: 'E' as const },
-      // Turn S
-      { x: 4, y: 0, rotation: 180, dir: 'S' as const },
-      // South 5
-      { x: 4, y: 1, rotation: 180, dir: 'S' as const },
-      { x: 4, y: 2, rotation: 180, dir: 'S' as const },
-      { x: 4, y: 3, rotation: 180, dir: 'S' as const },
-      { x: 4, y: 4, rotation: 180, dir: 'S' as const },
-      { x: 4, y: 5, rotation: 180, dir: 'S' as const },
-      // Turn E
-      { x: 4, y: 5, rotation: 90, dir: 'E' as const },
-      // East 1
-      { x: 5, y: 5, rotation: 90, dir: 'E' as const },
-      // Finish (Wait)
-      { x: 5, y: 5, rotation: 90, dir: 'E' as const },
-      { x: 5, y: 5, rotation: 90, dir: 'E' as const },
-    ];
+  const [demoScore, setDemoScore] = useState(0);
+  const [demoVisibleCoins, setDemoVisibleCoins] = useState<Map<string, any>>(
+    new Map(demoLevel.coins.map(c => [`${c.x},${c.y}`, c]))
+  );
 
+  useEffect(() => {
+    const DIR_ROTATION: Record<Direction, number> = { N: 0, E: 90, S: 180, W: 270 };
+    const DIR_DELTA: Record<Direction, [number, number]> = { 
+      N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] 
+    };
+
+    const generatePath = (moves: Array<{ dir: Direction; steps: number }>) => {
+      const path: Position[] = [];
+      let [x, y] = [demoLevel.startPos.x, demoLevel.startPos.y];
+      let currentDir = demoLevel.startPos.dir;
+
+      moves.forEach(({ dir, steps }) => {
+        if (dir !== currentDir) {
+          path.push({ x, y, dir, rotation: DIR_ROTATION[dir] });
+          currentDir = dir;
+        }
+        const [dx, dy] = DIR_DELTA[dir];
+        for (let i = 0; i < steps; i++) {
+          x += dx;
+          y += dy;
+          path.push({ x, y, dir, rotation: DIR_ROTATION[dir] });
+        }
+      });
+
+      // Add pause frames at end
+      for (let i = 0; i < 3; i++) {
+        path.push({ x, y, dir: currentDir, rotation: DIR_ROTATION[currentDir] });
+      }
+      return path;
+    };
+
+    const path = generatePath([
+      { dir: 'S', steps: 4 },
+      { dir: 'E', steps: 2 },
+      { dir: 'N', steps: 4 },
+      { dir: 'E', steps: 2 },
+      { dir: 'S', steps: 5 },
+      { dir: 'E', steps: 1 }
+    ]);
+
+    const coinMap = new Map(demoLevel.coins.map(c => [`${c.x},${c.y}`, c]));
     let step = 0;
+    const collectedCoins = new Set<string>();
+
     const interval = setInterval(() => {
       step = (step + 1) % path.length;
-      const nextPos = path[step];
-      setDemoPosition(nextPos);
+      const pos = path[step];
+      setDemoPosition(pos);
 
-      // Reset coins at start
       if (step === 0) {
-        setDemoCoins([]);
+        collectedCoins.clear();
+        setDemoScore(0);
+        setDemoVisibleCoins(new Map(coinMap));
       }
 
-      // Collect coin 1 at (2,0)
-      if (nextPos.x === 2 && nextPos.y === 0 && !demoCoins.includes('2,0')) {
-        setDemoCoins(prev => [...prev, '2,0']);
+      const key = `${pos.x},${pos.y}`;
+      const coin = coinMap.get(key);
+      if (coin && !collectedCoins.has(key)) {
+        collectedCoins.add(key);
+        audioManager.playSoundEffect("coinGet");
+        setDemoScore(prev => prev + (coin.tier === 1 ? 1 : 0));
+        setDemoVisibleCoins(prev => {
+          const newMap = new Map(prev);
+          newMap.delete(key);
+          return newMap;
+        });
       }
-      
-      // Collect coin 2 at (4,5)
-      if (nextPos.x === 4 && nextPos.y === 5 && !demoCoins.includes('4,5')) {
-        setDemoCoins(prev => [...prev, '4,5']);
-      }
-    }, 400);
+    }, 500);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="min-h-screen w-screen bg-slate-950 text-slate-200 font-sans flex flex-col overflow-hidden relative">
+    <PageTransition className="h-screen w-screen bg-slate-950 text-slate-200 font-sans flex flex-col overflow-hidden relative">
       <BackgroundGrid />
-      
-      {/* Header for Language Switch - REMOVED */}
-      {/* <header className="absolute top-0 right-0 p-6 z-50">
-        <TooltipButton
-          icon={<Globe size={24} />}
-          tooltip={t.switchLang}
-          onClick={() => handleSetLang(lang === 'en' ? 'zh' : 'en')}
-          className="p-3 bg-slate-900/30 hover:bg-slate-800/50 text-slate-300 hover:text-cyan-400 rounded-full border border-white/10 hover:border-cyan-500/50 transition-all backdrop-blur-md shadow-lg"
-        />
-      </header> */}
 
       <main className="flex-1 flex flex-col lg:flex-row relative z-10">
         {/* Left Side: Menu */}
@@ -118,11 +114,11 @@ export function HomePage() {
               </div>
               <span className="text-slate-300 font-medium tracking-wide">v{__APP_VERSION__}</span>
             </div>
-            
+
             <h1 className="text-4xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 mb-6 tracking-tight leading-tight">
               {t.title}
             </h1>
-            
+
             <p className="text-lg text-slate-400 max-w-xl leading-relaxed">
               {t.aboutDesc}
             </p>
@@ -134,29 +130,32 @@ export function HomePage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col gap-4 w-full max-w-xs"
           >
-            <button
+            <motion.button
+              {...createHoverAnimation(1.02, 0.2)}
               onClick={() => navigate('/levels')}
-              className="group relative px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3 overflow-hidden"
+              className="group relative px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all flex items-center justify-center gap-3 overflow-hidden"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              <Play className="fill-current" />
-              <span>{t.startGame}</span>
-            </button>
+              <Play className="fill-current relative z-10" />
+              <span className="relative z-10">{t.startGame}</span>
+            </motion.button>
 
-            <button
+            <motion.button
+              {...createHoverAnimation(1.02, 0.2)}
               onClick={() => navigate('/settings')}
               className="px-8 py-4 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl font-semibold border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-3 backdrop-blur-md shadow-lg"
             >
               <Settings size={20} />
               <span>{t.settings}</span>
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
+              {...createHoverAnimation(1.02, 0.2)}
               className="px-8 py-4 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl font-semibold border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-3 backdrop-blur-md shadow-lg"
             >
               <Info size={20} />
               <span>{t.about}</span>
-            </button>
+            </motion.button>
           </motion.div>
         </div>
 
@@ -170,31 +169,33 @@ export function HomePage() {
             style={{ perspective: '1000px' }}
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 to-purple-500/10 rounded-3xl blur-3xl -z-10" />
-            
+
             <div className="w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50 bg-slate-950/80 backdrop-blur-sm transform rotate-y-12 hover:rotate-y-0 transition-transform duration-500">
               <GameGrid
                 t={t}
                 lang={settings.language}
                 levelConfig={demoLevel}
                 position={demoPosition}
-                collectedCoins={demoCoins}
+                score={demoScore}
+                visibleCoins={demoVisibleCoins}
                 moveCount={0}
                 speed={500}
                 className="w-full h-full"
                 hideControls={true}
+                settings={settings}
               />
             </div>
 
             {/* Floating Elements */}
-            <motion.div 
+            <motion.div
               animate={{ y: [0, -20, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -top-6 -right-6 w-20 h-20 bg-slate-900/60 rounded-2xl border border-white/10 flex items-center justify-center shadow-xl z-20 backdrop-blur-xl"
             >
               <div className="text-4xl">✨</div>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               animate={{ y: [0, 20, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
               className="absolute -bottom-8 -left-8 w-24 h-24 bg-slate-900/60 rounded-2xl border border-white/10 flex items-center justify-center shadow-xl z-20 p-4 backdrop-blur-xl"
@@ -204,6 +205,6 @@ export function HomePage() {
           </motion.div>
         </div>
       </main>
-    </div>
+    </PageTransition>
   );
 }

@@ -4,6 +4,7 @@ import { LEVELS, TRANSLATIONS } from '../config';
 import { motion } from 'motion/react';
 import { Play, Lock, CheckCircle2, Settings, Home } from 'lucide-react';
 import { BackgroundGrid } from '../components/BackgroundGrid';
+import { PageTransition } from '../components/PageTransition';
 import { TooltipButton } from '../components/TooltipButton';
 import { useStore } from '../context/StoreContext';
 
@@ -15,7 +16,7 @@ export function LevelSelectPage() {
   const unlockedLevelIndex = progress.unlockedLevelIndex;
 
   return (
-    <div className="h-screen w-full bg-slate-950 text-slate-200 font-sans flex flex-col relative overflow-hidden">
+    <PageTransition className="h-screen w-full bg-slate-950 text-slate-200 font-sans flex flex-col relative overflow-hidden">
       <BackgroundGrid />
       
       <header className="h-20 shrink-0 flex items-center px-4 lg:px-8 z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/5">
@@ -49,9 +50,19 @@ export function LevelSelectPage() {
       </header>
 
       <main className="flex-1 w-full max-w-6xl mx-auto p-4 lg:p-8 overflow-y-auto">
-        <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-8"
+        >
           <h2 className="text-xl md:text-2xl font-semibold mb-6 text-slate-300 flex items-center gap-2">
-            <span className="w-1 h-6 md:h-8 bg-blue-500 rounded-full"></span>
+            <motion.span
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              className="w-1 h-6 md:h-8 bg-blue-500 rounded-full origin-left"
+            />
             {t.selectLevel}
           </h2>
           
@@ -63,36 +74,67 @@ export function LevelSelectPage() {
               return (
                 <motion.div
                   key={level.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ 
+                    delay: index * 0.05,
+                    duration: 0.4,
+                    ease: [0.22, 1, 0.36, 1]
+                  }}
+                  whileHover={isUnlocked ? { 
+                    y: -8,
+                    transition: { duration: 0.2 }
+                  } : {}}
                 >
                   <Link
                     to={isUnlocked ? `/game/${level.id}` : '#'}
                     className={`block p-6 rounded-2xl border transition-all duration-300 h-full relative overflow-hidden group ${
                       isUnlocked 
-                        ? 'border-slate-700 bg-slate-900/80 hover:border-blue-500/50 hover:bg-slate-800/90 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 cursor-pointer backdrop-blur-sm' 
+                        ? 'border-slate-700 bg-slate-900/80 hover:border-blue-500/50 hover:bg-slate-800/90 hover:shadow-2xl hover:shadow-blue-500/20 cursor-pointer backdrop-blur-sm' 
                         : 'border-slate-800 bg-slate-950/50 opacity-60 cursor-not-allowed grayscale'
                     }`}
                     onClick={(e) => !isUnlocked && e.preventDefault()}
                   >
                     {/* Card Background Gradient Effect */}
                     {isUnlocked && (
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <>
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100"
+                          transition={{ duration: 0.3 }}
+                        />
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+                          initial={{ x: '-100%' }}
+                          whileHover={{ x: '200%' }}
+                          transition={{ duration: 0.6 }}
+                        />
+                      </>
                     )}
 
                     <div className="flex justify-between items-start mb-4 relative z-10">
-                      <span className="text-xs font-mono font-medium text-slate-500 uppercase tracking-wider bg-slate-800/50 px-2 py-1 rounded">
+                      <motion.span 
+                        className="text-xs font-mono font-medium text-slate-500 uppercase tracking-wider bg-slate-800/50 px-2 py-1 rounded"
+                        whileHover={isUnlocked ? { scale: 1.05 } : {}}
+                      >
                         {t.level} {index + 1}
-                      </span>
+                      </motion.span>
                       {isCompleted ? (
-                        <div className="bg-green-500/10 p-1.5 rounded-full">
+                        <motion.div
+                          className="bg-green-500/10 p-1.5 rounded-full"
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ delay: index * 0.05 + 0.2, type: "spring" }}
+                        >
                           <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        </div>
+                        </motion.div>
                       ) : isUnlocked ? (
-                        <div className="bg-blue-500/10 p-1.5 rounded-full group-hover:bg-blue-500/20 transition-colors">
-                          <Play className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" />
-                        </div>
+                        <motion.div
+                          className="bg-blue-500/10 p-1.5 rounded-full group-hover:bg-blue-500/20 transition-colors"
+                          whileHover={{ rotate: 90, scale: 1.1 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                        >
+                          <Play className="w-5 h-5 text-blue-400" />
+                        </motion.div>
                       ) : (
                         <div className="bg-slate-800 p-1.5 rounded-full">
                           <Lock className="w-5 h-5 text-slate-600" />
@@ -111,13 +153,16 @@ export function LevelSelectPage() {
                       </div>
                       <div className="flex gap-1 h-1.5">
                         {[...Array(10)].map((_, i) => (
-                          <div 
+                          <motion.div 
                             key={i} 
                             className={`flex-1 rounded-full transition-all duration-300 ${
                               i < level.difficulty 
                                 ? i < 3 ? 'bg-green-500' : i < 6 ? 'bg-yellow-500' : 'bg-red-500'
                                 : 'bg-slate-800'
-                            }`} 
+                            }`}
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            transition={{ delay: index * 0.05 + i * 0.03, duration: 0.3 }}
                           />
                         ))}
                       </div>
@@ -127,8 +172,8 @@ export function LevelSelectPage() {
               );
             })}
           </div>
-        </div>
+        </motion.div>
       </main>
-    </div>
+    </PageTransition>
   );
 }

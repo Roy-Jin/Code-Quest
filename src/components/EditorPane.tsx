@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { AlertCircle, CheckCircle2, History, Terminal, Code2, X } from 'lucide-react';
 import { TooltipButton } from './TooltipButton';
 import { LevelConfig } from '../types';
@@ -35,7 +36,7 @@ export function EditorPane({
     if (monaco) {
       // Generate TS definitions based on available commands for the current level
       const tsDefs = levelConfig.availableCommands
-        .map(cmdId => COMMAND_REGISTRY[cmdId]?.tsDefinition || '')
+        .map(cmdId => COMMAND_REGISTRY[cmdId]?.getTsDefinition(settings.language) || '')
         .join('\n');
 
       const disposable = (monaco.languages.typescript as any).javascriptDefaults.addExtraLib(
@@ -45,7 +46,7 @@ export function EditorPane({
 
       return () => disposable.dispose();
     }
-  }, [monaco, levelConfig.availableCommands]);
+  }, [monaco, levelConfig.availableCommands, settings.language]);
 
   // Auto-switch to console on run, error, or success
   useEffect(() => {
@@ -121,7 +122,7 @@ export function EditorPane({
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative overflow-hidden">
         {/* Monaco Editor */}
         <div className={`absolute inset-0 ${activeTab === 'code' ? 'block' : 'hidden'}`}>
           <Editor
@@ -155,19 +156,30 @@ export function EditorPane({
         <div className={`absolute inset-0 bg-slate-950 flex flex-col ${activeTab === 'console' ? 'block' : 'hidden'}`}>
           <div className="flex-1 p-4 overflow-y-auto font-mono text-sm flex flex-col gap-2 text-slate-300 select-text">
             {error && (
-              <div className="flex items-start gap-2 text-red-400 bg-red-950/30 p-3 rounded border border-red-900/50">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-start gap-2 text-red-400 bg-red-950/30 p-3 rounded border border-red-900/50"
+              >
                 <AlertCircle size={16} className="mt-0.5 shrink-0" />
                 <span className="break-all">{error}</span>
-              </div>
+              </motion.div>
             )}
             {isSuccess && (
-              <div className="flex flex-col gap-3 bg-emerald-950/40 p-4 rounded border border-emerald-900/50">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: "spring", stiffness: 200 }}
+                className="flex flex-col gap-3 bg-emerald-950/40 p-4 rounded border border-emerald-900/50"
+              >
                 <div className="flex items-start gap-2 text-emerald-400">
                   <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
                   <span className="font-semibold">{t.success}</span>
                 </div>
                 {hasNextLevel && (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => {
                       setActiveTab('code');
                       goToNextLevel();
@@ -175,19 +187,29 @@ export function EditorPane({
                     className="self-start px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded shadow transition-colors"
                   >
                     {t.nextLevel}
-                  </button>
+                  </motion.button>
                 )}
-              </div>
+              </motion.div>
             )}
             {logs.map((log, i) => (
-              <div key={i} className="text-slate-300 py-1 border-b border-slate-800/50 last:border-0">
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="text-slate-300 py-1 border-b border-slate-800/50 last:border-0"
+              >
                 <span className="text-slate-500 mr-2 select-none">&gt;</span>{log}
-              </div>
+              </motion.div>
             ))}
             {!error && !isSuccess && logs.length === 0 && (
-              <div className="text-slate-500 italic flex items-center justify-center h-full">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-slate-500 italic flex items-center justify-center h-full"
+              >
                 {t.noOutput}
-              </div>
+              </motion.div>
             )}
           </div>
         </div>

@@ -44,7 +44,12 @@ export function Header({
   }, []);
 
   return (
-    <header className="h-14 border-b border-slate-800 bg-slate-900 flex items-center justify-between px-4 shrink-0 z-[60]">
+    <motion.header 
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="h-14 border-b border-slate-800 bg-slate-900 flex items-center justify-between px-4 shrink-0 z-[60]"
+    >
       <div className="flex items-center gap-2 md:gap-4">
         {showHomeButton && (
           <TooltipButton
@@ -131,21 +136,25 @@ export function Header({
       </div>
 
       <div className="flex items-center gap-2">
-        <TooltipButton
-          icon={<RotateCcw size={18} />}
-          tooltip={t.resetGame}
-          onClick={reset}
-          tooltipAlign="right"
-          className="p-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 rounded-md"
-        />
-        <TooltipButton
-          icon={isRunning ? (isPaused ? <Play size={18} /> : <Pause size={18} />) : <Play size={18} />}
-          tooltip={isRunning ? (isPaused ? t.resume : t.pause) : t.runCode}
-          onClick={isRunning ? togglePause : () => runCode()}
-          tooltipAlign="right"
-          className={`p-2 rounded-md shadow-sm transition-colors ${isRunning && !isPaused ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-500'}`}
-        />
+        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          <TooltipButton
+            icon={<RotateCcw size={18} />}
+            tooltip={t.resetGame}
+            onClick={reset}
+            tooltipAlign="right"
+            className="p-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 rounded-md"
+          />
+        </motion.div>
+        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          <TooltipButton
+            icon={isRunning ? (isPaused ? <Play size={18} /> : <Pause size={18} />) : <Play size={18} />}
+            tooltip={isRunning ? (isPaused ? t.resume : t.pause) : t.runCode}
+            onClick={isRunning ? togglePause : () => runCode()}
+            tooltipAlign="right"
+            className={`p-2 rounded-md shadow-sm transition-colors ${isRunning && !isPaused ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-500'}`}
+          />
+        </motion.div>
       </div>
-    </header>
+    </motion.header>
   );
 }
