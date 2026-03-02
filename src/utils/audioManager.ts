@@ -78,7 +78,7 @@ class AudioManager {
 
     // Create audio element if it doesn't exist
     if (!this.bgmAudio) {
-      this.bgmAudio = new Audio(`/public/${music}.mp3`);
+      this.bgmAudio = new Audio(`/${music}.mp3`);
       this.bgmAudio.loop = true;
     }
 
@@ -131,7 +131,7 @@ class AudioManager {
     let audio = this.sfxCache.get(effect);
     
     if (!audio) {
-      audio = new Audio(`/public/${effect}.mp3`);
+      audio = new Audio(`/${effect}.mp3`);
       this.sfxCache.set(effect, audio);
     }
 
@@ -150,7 +150,7 @@ class AudioManager {
   preloadAudio(): void {
     // Preload background music
     if (!this.bgmAudio) {
-      this.bgmAudio = new Audio('/public/bgm.mp3');
+      this.bgmAudio = new Audio('/bgm.mp3');
       this.bgmAudio.loop = true;
       this.bgmAudio.volume = this.settings.musicVolume / 100;
     }
@@ -159,7 +159,7 @@ class AudioManager {
     const effects: SoundEffect[] = ['coinGet'];
     effects.forEach(effect => {
       if (!this.sfxCache.has(effect)) {
-        const audio = new Audio(`/public/${effect}.mp3`);
+        const audio = new Audio(`/${effect}.mp3`);
         this.sfxCache.set(effect, audio);
       }
     });
