@@ -465,11 +465,11 @@ const LevelEditorPage = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-2">{t.difficulty} (0-5)</label>
+                      <label className="block text-sm text-slate-400 mb-2">{t.difficulty} (0-10)</label>
                       <input
                         type="number"
                         min="0"
-                        max="5"
+                        max="10"
                         value={difficulty}
                         onChange={(e) => setDifficulty(Number(e.target.value))}
                         className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"

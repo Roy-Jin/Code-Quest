@@ -1,0 +1,72 @@
+{
+  "id": "DemoLevel",
+  "name": {
+    "en": "Demo Level",
+    "zh": "演示关卡"
+  },
+  "gridSize": 5,
+  "startPos": {
+    "x": 0,
+    "y": 0,
+    "dir": "N"
+  },
+  "targetPos": {
+    "x": 4,
+    "y": 4
+  },
+  "walls": [
+    {
+      "x": 1,
+      "y": 0
+    },
+    {
+      "x": 1,
+      "y": 1
+    },
+    {
+      "x": 1,
+      "y": 2
+    },
+    {
+      "x": 3,
+      "y": 2
+    },
+    {
+      "x": 3,
+      "y": 3
+    },
+    {
+      "x": 3,
+      "y": 4
+    }
+  ],
+  "coins": [
+    {
+      "x": 0,
+      "y": 4,
+      "tier": 1
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "tier": 1
+    }
+  ],
+  "availableCommands": {
+    "Robot": [
+      "moveForward",
+      "turnLeft",
+      "turnRight"
+    ],
+    "Grid": [],
+    "Level": [],
+    "console": [
+      "log"
+    ]
+  },
+  "defaultCode": {
+    "en": "// Demo Level",
+    "zh": "// 演示关卡"
+  },
+  "difficulty": 1
+}

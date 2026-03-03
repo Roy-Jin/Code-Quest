@@ -7,8 +7,9 @@ import { BackgroundGrid } from '../components/BackgroundGrid';
 import { GameGrid } from '../components/GameGrid';
 import { PageTransition } from '../components/PageTransition';
 import { useStore } from '../context/StoreContext';
-import { Direction, Position } from '../types';
+import { Direction, LevelConfig, Position } from '../types';
 import { audioManager } from '../utils/audioManager';
+import DemoLevel from '../config/levels/DemoLevel.json';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export function HomePage() {
   const t = TRANSLATIONS[settings.language];
 
   // Demo Animation Logic
-  const demoLevel = LEVELS[3]; // Level 4
+  const demoLevel = DemoLevel as LevelConfig;
   const [demoPosition, setDemoPosition] = useState(demoLevel.startPos);
   const [demoScore, setDemoScore] = useState(0);
   const [demoVisibleCoins, setDemoVisibleCoins] = useState<Map<string, any>>(
@@ -59,8 +60,7 @@ export function HomePage() {
       { dir: 'E', steps: 2 },
       { dir: 'N', steps: 4 },
       { dir: 'E', steps: 2 },
-      { dir: 'S', steps: 5 },
-      { dir: 'E', steps: 1 }
+      { dir: 'S', steps: 4 },
     ]);
 
     const coinMap = new Map(demoLevel.coins.map(c => [`${c.x},${c.y}`, c]));
