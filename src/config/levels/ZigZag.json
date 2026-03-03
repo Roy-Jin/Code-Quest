@@ -77,7 +77,7 @@
   },
   "defaultCode": {
     "en": "// Zig Zag\n// Use .turnRight() and .turnLeft() together to complete the level~\n\n",
-    "zh": "// Z 字形\n // 结合 .turnRight() 和 .turnLeft() 来完成关卡吧~\n\n"
+    "zh": "// Z 字形\n// 结合 .turnRight() 和 .turnLeft() 来完成关卡吧~\n\n"
   },
   "difficulty": 1
 }
