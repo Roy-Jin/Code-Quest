@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Zap, Code, Sparkles, Languages } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { TRANSLATIONS } from '../config';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -9,6 +10,7 @@ interface SplashScreenProps {
 
 export function SplashScreen({ onComplete }: SplashScreenProps) {
   const { settings, updateSettings } = useStore();
+  const t = TRANSLATIONS[settings.language];
   const [progress, setProgress] = useState(0);
   const [showButton, setShowButton] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
@@ -151,10 +153,10 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             className="text-center"
           >
             <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 mb-3">
-              {settings.language === 'zh' ? '代码探险' : 'Code Quest'}
+              {t.title}
             </h1>
             <p className="text-slate-400 text-lg">
-              {settings.language === 'zh' ? '编程冒险之旅' : 'Programming Adventure'}
+              {t.programmingAdventure}
             </p>
           </motion.div>
 
@@ -188,8 +190,8 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
               transition={{ duration: 1.5, repeat: Infinity }}
             >
               {progress < 100 
-                ? settings.language === 'zh' ? `加载中... ${progress}%` : `Loading... ${progress}%`
-                : settings.language === 'zh' ? '准备就绪！' : 'Ready!'}
+                ? `${t.loading} ${progress}%`
+                : t.ready}
             </motion.p>
           </motion.div>
 
@@ -210,7 +212,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 
                 <span className="relative z-10 flex items-center gap-3">
                   <Sparkles className="w-6 h-6" />
-                  {settings.language === 'zh' ? '出发吧!' : 'Let\'s go!'}
+                  {t.letsGo}
                   <motion.span
                     animate={{ x: [0, 5, 0] }}
                     transition={{ duration: 1, repeat: Infinity }}
@@ -230,9 +232,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
               transition={{ delay: 0.3 }}
               className="text-slate-500 text-sm"
             >
-              {settings.language === 'zh' 
-                ? '点击按钮开始你的编程之旅' 
-                : 'Click the button to start your coding journey'}
+              {t.clickToStart}
             </motion.p>
           )}
         </div>

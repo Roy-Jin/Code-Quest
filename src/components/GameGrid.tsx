@@ -352,7 +352,7 @@ export function GameGrid({ t, lang, levelConfig, position, score, visibleCoins, 
             {onOpenEditor && (
               <TooltipButton
                 icon={<Code2 size={16} />}
-                tooltip="Open Editor"
+                tooltip={t.openEditor}
                 onClick={onOpenEditor}
                 tooltipAlign="right"
                 className="md:hidden w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-full shadow-sm transition-colors ml-1"
@@ -394,10 +394,10 @@ export function GameGrid({ t, lang, levelConfig, position, score, visibleCoins, 
                   if (!cmds || cmds.length === 0) return null;
                   
                   const categoryLabels: Record<string, { en: string; zh: string }> = {
-                    Robot: { en: 'Robot', zh: '机器人' },
-                    Grid: { en: 'Grid', zh: '网格' },
-                    Level: { en: 'Level', zh: '关卡' },
-                    console: { en: 'Console', zh: '控制台' }
+                    Robot: { en: t.robot, zh: t.robot },
+                    Grid: { en: t.grid, zh: t.grid },
+                    Level: { en: t.level, zh: t.level },
+                    console: { en: t.console, zh: t.console }
                   };
                   
                   const categoryColors: Record<string, string> = {

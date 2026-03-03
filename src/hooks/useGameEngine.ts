@@ -142,7 +142,7 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
               // Check for pressure plate activation
               const plate = pressurePlates.find(p => p.x === newX && p.y === newY);
               if (plate) {
-                const tierNames: Record<CoinTier, string> = { 1: 'Wood', 2: 'Silver', 3: 'Gold', 4: 'Diamond' };
+                const tierNames: Record<CoinTier, string> = { 1: 'Copper', 2: 'Silver', 3: 'Gold', 4: 'Diamond' };
                 setLogs((prev: string[]) => [...prev, `${tierNames[plate.tier]} pressure plate activated! Resetting ${tierNames[plate.tier]} coins...`]);
                 gameState.resetCoinsByTier(coins, plate.tier);
                 setVisibleCoins(new Map(gameState.visibleCoins));

@@ -3,14 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Home, Download, Copy, Check, Info, Trash2, RotateCcw } from 'lucide-react';
 import { LevelConfig, Direction, Coin, PressurePlate, CoinTier, AvailableAPIs, CoinSystem } from '../types';
-import { COMMAND_REGISTRY } from '../config/commands';
+import { COMMAND_REGISTRY, TRANSLATIONS } from '../config';
 import { TooltipButton } from '../components/TooltipButton';
 import { PageTransition } from '../components/PageTransition';
+import { useStore } from '../context/StoreContext';
 
 type EditorMode = 'start' | 'target' | 'wall' | 'coin' | 'plate' | 'erase';
 
 const LevelEditorPage = () => {
   const navigate = useNavigate();
+  const { settings } = useStore();
+  const t = TRANSLATIONS[settings.language];
   const gridRef = useRef<HTMLDivElement>(null);
   const [gridSize, setGridSize] = useState(5);
   const [levelName, setLevelName] = useState({ en: 'New Level', zh: '新关卡' });
@@ -244,7 +247,7 @@ const LevelEditorPage = () => {
         <div className="flex items-center gap-4">
           <TooltipButton
             icon={<Home size={20} />}
-            tooltip="返回主页"
+            tooltip={t.backToHome}
             onClick={() => navigate('/')}
             className="p-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 rounded-md transition-colors"
           />
@@ -253,7 +256,7 @@ const LevelEditorPage = () => {
             <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
               <span className="text-sm font-bold">✏️</span>
             </div>
-            <h1 className="text-lg font-bold tracking-tight hidden sm:block">关卡编辑器</h1>
+            <h1 className="text-lg font-bold tracking-tight hidden sm:block">{t.levelEditor}</h1>
             <span className="text-xs text-slate-500 bg-slate-800 px-2 py-0.5 rounded">DEV</span>
           </div>
         </div>
@@ -261,21 +264,21 @@ const LevelEditorPage = () => {
         <div className="flex items-center gap-2">
           <TooltipButton
             icon={<Info size={18} />}
-            tooltip={showConfig ? "隐藏配置" : "显示配置"}
+            tooltip={showConfig ? t.hideConfig : t.showConfig}
             onClick={() => setShowConfig(!showConfig)}
             tooltipAlign="right"
             className={`p-2 rounded-md transition-colors ${showConfig ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'}`}
           />
           <TooltipButton
             icon={copied ? <Check size={18} /> : <Copy size={18} />}
-            tooltip={copied ? "已复制!" : "复制配置"}
+            tooltip={copied ? t.copied : t.copyConfig}
             onClick={copyToClipboard}
             tooltipAlign="right"
             className={`p-2 rounded-md transition-colors ${copied ? 'bg-green-600 text-white' : 'bg-purple-600 text-white hover:bg-purple-500'}`}
           />
           <TooltipButton
             icon={<Download size={18} />}
-            tooltip="导出JSON"
+            tooltip={t.exportJson}
             onClick={exportConfig}
             tooltipAlign="right"
             className="p-2 bg-cyan-600 text-white hover:bg-cyan-500 rounded-md transition-colors"
@@ -297,7 +300,7 @@ const LevelEditorPage = () => {
                     : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                 }`}
               >
-                🤖 起点
+                🤖 {t.startPoint}
               </button>
               <button
                 onClick={() => setMode('target')}
@@ -307,7 +310,7 @@ const LevelEditorPage = () => {
                     : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                 }`}
               >
-                🎯 终点
+                🎯 {t.target}
               </button>
               <button
                 onClick={() => setMode('wall')}
@@ -317,7 +320,7 @@ const LevelEditorPage = () => {
                     : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                 }`}
               >
-                🧱 墙壁
+                🧱 {t.wall}
               </button>
               <button
                 onClick={() => setMode('coin')}
@@ -327,7 +330,7 @@ const LevelEditorPage = () => {
                     : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                 }`}
               >
-                💰 金币
+                💰 {t.coin}
               </button>
               <button
                 onClick={() => setMode('plate')}
@@ -337,7 +340,7 @@ const LevelEditorPage = () => {
                     : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                 }`}
               >
-                ⚡ 压力板
+                ⚡ {t.pressurePlate}
               </button>
               <button
                 onClick={() => setMode('erase')}
@@ -347,14 +350,14 @@ const LevelEditorPage = () => {
                     : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                 }`}
               >
-                🗑️ 擦除
+                🗑️ {t.erase}
               </button>
               
               <div className="flex-1"></div>
               
               <TooltipButton
                 icon={<Trash2 size={16} />}
-                tooltip="清空所有元素"
+                tooltip={t.clearAll}
                 onClick={clearAll}
                 className="px-3 py-2 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-sm border border-red-500/30"
               />
@@ -362,7 +365,7 @@ const LevelEditorPage = () => {
 
             {(mode === 'coin' || mode === 'plate') && (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-400">等级:</span>
+                <span className="text-sm text-slate-400">{t.tier}:</span>
                 {[1, 2, 3, 4].map(tier => (
                   <button
                     key={tier}
@@ -375,10 +378,10 @@ const LevelEditorPage = () => {
                   </button>
                 ))}
                 <span className="text-xs text-slate-500 ml-2">
-                  {selectedTier === 1 && '木质 (1分)'}
-                  {selectedTier === 2 && '银质 (5分)'}
-                  {selectedTier === 3 && '金质 (15分)'}
-                  {selectedTier === 4 && '钻石 (25分)'}
+                  {selectedTier === 1 && `${t.wood} (1${t.score})`}
+                  {selectedTier === 2 && `${t.silver} (5${t.score})`}
+                  {selectedTier === 3 && `${t.gold} (15${t.score})`}
+                  {selectedTier === 4 && `${t.diamond} (25${t.score})`}
                 </span>
               </div>
             )}
@@ -403,13 +406,13 @@ const LevelEditorPage = () => {
           {/* Stats Bar */}
           <div className="border-t border-slate-800 bg-slate-900/50 px-4 py-2 flex items-center justify-between text-xs text-slate-400">
             <div className="flex gap-4">
-              <span>网格: {gridSize}×{gridSize}</span>
-              <span>墙壁: {walls.length}</span>
-              <span>金币: {coins.length}</span>
-              <span>压力板: {plates.length}</span>
+              <span>{t.grid}: {gridSize}×{gridSize}</span>
+              <span>{t.wall}: {walls.length}</span>
+              <span>{t.coin}: {coins.length}</span>
+              <span>{t.pressurePlate}: {plates.length}</span>
             </div>
             <div className="text-slate-500">
-              点击网格放置元素
+              {t.clickGridToPlace}
             </div>
           </div>
         </div>
@@ -426,11 +429,11 @@ const LevelEditorPage = () => {
             >
               <div className="p-6 space-y-6">
                 <div>
-                  <h2 className="text-xl font-bold mb-4 text-cyan-400">基本配置</h2>
+                  <h2 className="text-xl font-bold mb-4 text-cyan-400">{t.basicConfig}</h2>
                   
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm text-slate-400 mb-2">网格大小</label>
+                      <label className="block text-sm text-slate-400 mb-2">{t.gridSize}</label>
                       <input
                         type="number"
                         min="3"
@@ -442,7 +445,7 @@ const LevelEditorPage = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-2">关卡名称 (EN)</label>
+                      <label className="block text-sm text-slate-400 mb-2">{t.levelName} (EN)</label>
                       <input
                         type="text"
                         value={levelName.en}
@@ -452,7 +455,7 @@ const LevelEditorPage = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-2">关卡名称 (ZH)</label>
+                      <label className="block text-sm text-slate-400 mb-2">{t.levelName} (ZH)</label>
                       <input
                         type="text"
                         value={levelName.zh}
@@ -462,7 +465,7 @@ const LevelEditorPage = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-2">难度 (0-5)</label>
+                      <label className="block text-sm text-slate-400 mb-2">{t.difficulty} (0-5)</label>
                       <input
                         type="number"
                         min="0"
@@ -474,45 +477,45 @@ const LevelEditorPage = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-2">起始方向</label>
+                      <label className="block text-sm text-slate-400 mb-2">{t.startPoint} {t.direction}</label>
                       <select
                         value={startPos.dir}
                         onChange={(e) => setStartPos(prev => ({ ...prev, dir: e.target.value as Direction }))}
                         className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                       >
-                        <option value="N">北 (N) ↑</option>
-                        <option value="E">东 (E) →</option>
-                        <option value="S">南 (S) ↓</option>
-                        <option value="W">西 (W) ←</option>
+                        <option value="N">N (North) ↑</option>
+                        <option value="E">E (East) →</option>
+                        <option value="S">S (South) ↓</option>
+                        <option value="W">W (West) ←</option>
                       </select>
                     </div>
                   </div>
                 </div>
 
                 <div className="border-t border-slate-800 pt-6">
-                  <h3 className="text-lg font-bold mb-4 text-purple-400">胜利条件</h3>
+                  <h3 className="text-lg font-bold mb-4 text-purple-400">{t.victoryConditions}</h3>
                   
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm text-slate-400 mb-2">最大步数 (可选)</label>
+                      <label className="block text-sm text-slate-400 mb-2">{t.maxMoves} ({t.optional})</label>
                       <input
                         type="number"
                         min="1"
                         value={maxMoves ?? ''}
                         onChange={(e) => setMaxMoves(e.target.value ? Number(e.target.value) : undefined)}
-                        placeholder="不限制"
+                        placeholder={t.unlimited}
                         className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-2">所需分数 (可选)</label>
+                      <label className="block text-sm text-slate-400 mb-2">{t.requiredScore} ({t.optional})</label>
                       <input
                         type="number"
                         min="0"
                         value={requiredScore ?? ''}
                         onChange={(e) => setRequiredScore(e.target.value ? Number(e.target.value) : undefined)}
-                        placeholder="不限制"
+                        placeholder={t.unlimited}
                         className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
                     </div>
@@ -520,7 +523,7 @@ const LevelEditorPage = () => {
                 </div>
 
                 <div className="border-t border-slate-800 pt-6">
-                  <h3 className="text-lg font-bold mb-4 text-amber-400">可用命令</h3>
+                  <h3 className="text-lg font-bold mb-4 text-amber-400">{t.availableCommands}</h3>
                   <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
                     {Object.keys(COMMAND_REGISTRY).map(cmd => (
                       <label key={cmd} className="flex items-start gap-3 p-2 rounded-lg hover:bg-slate-800/50 cursor-pointer transition-colors">
@@ -535,7 +538,7 @@ const LevelEditorPage = () => {
                             {COMMAND_REGISTRY[cmd].signature}
                           </div>
                           <div className="text-[10px] text-slate-500 mt-0.5">
-                            {COMMAND_REGISTRY[cmd].description.zh}
+                            {COMMAND_REGISTRY[cmd].description[settings.language]}
                           </div>
                         </div>
                       </label>

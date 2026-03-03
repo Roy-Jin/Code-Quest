@@ -164,7 +164,7 @@ export function HomePage() {
                 className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-semibold border border-purple-400/30 transition-all flex items-center justify-center gap-3 shadow-lg shadow-purple-500/20"
               >
                 <Code size={20} />
-                <span>关卡编辑器 (Dev)</span>
+                <span>{t.levelEditorDev}</span>
               </motion.button>
             )}
           </motion.div>

@@ -15,7 +15,7 @@ export interface Position {
 
 /**
  * Coin tier levels:
- * - 1: Wood (1 point)
+ * - 1: Copper (1 point)
  * - 2: Silver (5 points)
  * - 3: Gold (15 points)
  * - 4: Diamond (25 points)
@@ -133,7 +133,7 @@ export function apiConfigToCommands(apis: AvailableAPIs): string[] {
 export class CoinSystem {
   /** Point values for each coin tier */
   static readonly TIER_SCORES: Record<CoinTier, number> = {
-    1: 1,   // Wood
+    1: 1,   // Copper
     2: 5,   // Silver
     3: 15,  // Gold
     4: 25   // Diamond
@@ -141,7 +141,7 @@ export class CoinSystem {
 
   /** Visual styling for each coin tier */
   static readonly TIER_COLORS = {
-    1: { // Wood - Brown/Tan colors
+    1: { // Copper - Brown/Tan colors
       gradient: 'from-amber-800 via-amber-700 to-yellow-900',
       shadow: 'shadow-[0_0_12px_rgba(146,64,14,0.6)]',
       border: 'border-amber-900',
@@ -169,7 +169,7 @@ export class CoinSystem {
 
   /** Visual styling for each pressure plate tier */
   static readonly PLATE_COLORS = {
-    1: { // Wood plate
+    1: { // Copper plate
       gradient: 'from-amber-800 via-amber-700 to-yellow-900',
       border: 'border-amber-900',
       shadow: 'shadow-[0_0_10px_rgba(146,64,14,0.5)]'

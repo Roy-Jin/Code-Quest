@@ -22,17 +22,17 @@ export function LevelSelectPage() {
   
   // Difficulty labels
   const difficultyLabels: Record<number, { en: string; zh: string }> = {
-    0: { en: 'Tutorial', zh: '教学' },
-    1: { en: 'Beginner', zh: '入门' },
-    2: { en: 'Easy', zh: '简单' },
-    3: { en: 'Normal', zh: '普通' },
-    4: { en: 'Medium', zh: '中等' },
-    5: { en: 'Challenging', zh: '挑战' },
-    6: { en: 'Hard', zh: '困难' },
-    7: { en: 'Expert', zh: '专家' },
-    8: { en: 'Master', zh: '大师' },
-    9: { en: 'Extreme', zh: '极限' },
-    10: { en: 'Legendary', zh: '传奇' },
+    0: { en: t.difficultyTutorial, zh: t.difficultyTutorial },
+    1: { en: t.difficultyBeginner, zh: t.difficultyBeginner },
+    2: { en: t.difficultyEasy, zh: t.difficultyEasy },
+    3: { en: t.difficultyNormal, zh: t.difficultyNormal },
+    4: { en: t.difficultyMedium, zh: t.difficultyMedium },
+    5: { en: t.difficultyChallenging, zh: t.difficultyChallenging },
+    6: { en: t.difficultyHard, zh: t.difficultyHard },
+    7: { en: t.difficultyExpert, zh: t.difficultyExpert },
+    8: { en: t.difficultyMaster, zh: t.difficultyMaster },
+    9: { en: t.difficultyExtreme, zh: t.difficultyExtreme },
+    10: { en: t.difficultyLegendary, zh: t.difficultyLegendary },
   };
 
   return (
@@ -126,7 +126,7 @@ export function LevelSelectPage() {
                     >
                       <CheckCircle2 className="w-5 h-5" />
                       <span className="text-sm font-medium">
-                        {settings.language === 'en' ? 'Completed' : '已完成'}
+                        {t.completed}
                       </span>
                     </motion.div>
                   )}
@@ -135,7 +135,7 @@ export function LevelSelectPage() {
                     <div className="flex items-center gap-2 text-slate-600">
                       <Lock className="w-5 h-5" />
                       <span className="text-sm font-medium">
-                        {settings.language === 'en' ? 'Locked' : '已锁定'}
+                        {t.locked}
                       </span>
                     </div>
                   )}

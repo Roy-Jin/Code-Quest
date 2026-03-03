@@ -7,6 +7,8 @@ import { GamePage } from './pages/GamePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SplashScreen } from './components/SplashScreen';
 import { audioManager } from './utils/audioManager';
+import { TRANSLATIONS } from './config';
+import { useStore } from './context/StoreContext';
 
 // Lazy load editor only in dev mode
 const LevelEditorPage = import.meta.env.DEV 
@@ -15,6 +17,8 @@ const LevelEditorPage = import.meta.env.DEV
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const { settings } = useStore();
+  const t = TRANSLATIONS[settings.language];
   const isDev = import.meta.env.DEV;
 
   return (
@@ -31,7 +35,7 @@ function AnimatedRoutes() {
               <div className="h-screen w-screen flex items-center justify-center bg-slate-950 text-slate-200">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
-                  <p>Loading Editor...</p>
+                  <p>{t.loadingEditor}</p>
                 </div>
               </div>
             }>
