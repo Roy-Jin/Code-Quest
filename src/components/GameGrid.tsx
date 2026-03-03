@@ -385,22 +385,56 @@ export function GameGrid({ t, lang, levelConfig, position, score, visibleCoins, 
           )}
 
           {showCommands && (
-            <div className="bg-slate-800/95 backdrop-blur-sm p-4 rounded-lg shadow-xl border border-slate-700 w-64 animate-in fade-in slide-in-from-top-2 max-h-[60vh] overflow-y-auto">
+            <div className="bg-slate-800/95 backdrop-blur-sm p-4 rounded-lg shadow-xl border border-slate-700 w-72 animate-in fade-in slide-in-from-top-2 max-h-[60vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">{t.availableCommands}</h3>
               </div>
-              <ul className="text-xs font-mono text-slate-300 space-y-2">
-                {levelConfig.availableCommands.map(cmdId => {
-                  const cmd = COMMAND_REGISTRY[cmdId];
-                  if (!cmd) return null;
+              <div className="space-y-4">
+                {Object.entries(levelConfig.availableCommands).map(([category, cmds]) => {
+                  if (!cmds || cmds.length === 0) return null;
+                  
+                  const categoryLabels: Record<string, { en: string; zh: string }> = {
+                    Robot: { en: 'Robot', zh: '机器人' },
+                    Grid: { en: 'Grid', zh: '网格' },
+                    Level: { en: 'Level', zh: '关卡' },
+                    console: { en: 'Console', zh: '控制台' }
+                  };
+                  
+                  const categoryColors: Record<string, string> = {
+                    Robot: 'text-blue-400 border-blue-500/30',
+                    Grid: 'text-emerald-400 border-emerald-500/30',
+                    Level: 'text-amber-400 border-amber-500/30',
+                    console: 'text-purple-400 border-purple-500/30'
+                  };
+                  
                   return (
-                    <li key={cmdId} className="bg-slate-900 px-2 py-1.5 rounded flex flex-col gap-1">
-                      <span className="text-cyan-400 font-semibold">{cmd.signature}</span>
-                      <span className="text-slate-500 text-[10px] leading-tight">{cmd.description[lang]}</span>
-                    </li>
+                    <div key={category}>
+                      <h4 className={`text-[10px] font-bold uppercase tracking-wider mb-2 pb-1 border-b ${categoryColors[category] || 'text-slate-400 border-slate-600'}`}>
+                        {categoryLabels[category]?.[lang] || category}
+                      </h4>
+                      <ul className="text-xs font-mono text-slate-300 space-y-1.5">
+                        {cmds.map(cmdId => {
+                          const fullCmdId = category === 'Robot' 
+                            ? (cmdId === 'x' ? 'robotX' : cmdId === 'y' ? 'robotY' : cmdId === 'direction' ? 'robotDir' : cmdId === 'speed' ? 'robotSpeed' : cmdId)
+                            : category === 'Grid'
+                            ? (cmdId === 'size' ? 'gridSize' : cmdId === 'walls' ? 'gridWalls' : cmdId === 'coins' ? 'gridCoins' : cmdId === 'target' ? 'gridTarget' : cmdId)
+                            : category === 'Level'
+                            ? (cmdId === 'requiredScore' ? 'requiredScore' : cmdId === 'maxMoves' ? 'maxMoves' : cmdId === 'score' ? 'currentScore' : cmdId === 'moves' ? 'currentMoves' : cmdId)
+                            : cmdId;
+                          const cmd = COMMAND_REGISTRY[fullCmdId];
+                          if (!cmd) return null;
+                          return (
+                            <li key={cmdId} className="bg-slate-900/50 px-2 py-1 rounded flex flex-col gap-0.5 hover:bg-slate-900 transition-colors">
+                              <span className="text-cyan-400 font-semibold">{cmd.signature}</span>
+                              <span className="text-slate-500 text-[9px] leading-tight">{cmd.description[lang]}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
                   );
                 })}
-              </ul>
+              </div>
             </div>
           )}
         </div>
