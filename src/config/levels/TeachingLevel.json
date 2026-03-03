@@ -1,0 +1,34 @@
+{
+  "id": "TeachingLevel",
+  "name": {
+    "en": "Hello World",
+    "zh": "你好世界"
+  },
+  "gridSize": 5,
+  "startPos": {
+    "x": 0,
+    "y": 2,
+    "dir": "E"
+  },
+  "targetPos": {
+    "x": 4,
+    "y": 2
+  },
+  "walls": [],
+  "coins": [],
+  "availableCommands": {
+    "Robot": [
+      "moveForward"
+    ],
+    "Grid": [],
+    "Level": [],
+    "console": [
+      "log"
+    ]
+  },
+  "defaultCode": {
+    "en": "// Level 1\n// Use Robot.moveForward() to reach the target!\n\n// Robot.moveForward()\n// Robot.moveForward()\n// Robot.moveForward()\n// Robot.moveForward()",
+    "zh": "// 关卡 1\n// 使用 Robot.moveForward() 到达目标点！\n\n// Robot.moveForward()\n// Robot.moveForward()\n// Robot.moveForward()\n// Robot.moveForward()"
+  },
+  "difficulty": 0
+}

@@ -15,7 +15,8 @@ interface HeaderProps {
   reset: () => void;
   currentLevelIndex: number;
   setCurrentLevelIndex: (index: number) => void;
-  unlockedLevelIndex: number;
+  unlockedDifficulty: number;
+  completedLevels: string[];
   levels: LevelConfig[];
   showHomeButton?: boolean;
   onHomeClick?: () => void;
@@ -23,7 +24,7 @@ interface HeaderProps {
 
 export function Header({ 
   t, isRunning, isPaused, runCode, togglePause, reset, 
-  currentLevelIndex, setCurrentLevelIndex, unlockedLevelIndex, levels,
+  currentLevelIndex, setCurrentLevelIndex, unlockedDifficulty, completedLevels, levels,
   showHomeButton, onHomeClick
 }: HeaderProps) {
   const { settings } = useStore();
@@ -92,7 +93,8 @@ export function Header({
                   {t.selectLevel}
                 </div>
                 {levels.map((level, idx) => {
-                  const isUnlocked = idx <= unlockedLevelIndex;
+                  const isUnlocked = level.difficulty <= unlockedDifficulty;
+                  const isCompleted = completedLevels.includes(level.id);
                   const isSelected = idx === currentLevelIndex;
                   
                   return (

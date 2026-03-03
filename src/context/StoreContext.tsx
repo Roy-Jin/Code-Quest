@@ -29,7 +29,6 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        // Merge with defaults to ensure new fields are present
         return {
           settings: { ...DEFAULT_SETTINGS, ...parsed.settings },
           progress: { ...DEFAULT_PROGRESS, ...parsed.progress }

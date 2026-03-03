@@ -1,0 +1,59 @@
+{
+  "id": "GetCoin",
+  "name": {
+    "en": "Get Coin",
+    "zh": "获取金币"
+  },
+  "gridSize": 5,
+  "startPos": {
+    "x": 1,
+    "y": 2,
+    "dir": "E"
+  },
+  "targetPos": {
+    "x": 4,
+    "y": 2
+  },
+  "walls": [],
+  "coins": [
+    {
+      "x": 0,
+      "y": 2,
+      "tier": 1
+    }
+  ],
+  "availableCommands": {
+    "Robot": [
+      "moveForward",
+      "turnLeft",
+      "turnRight",
+      "x",
+      "y",
+      "direction",
+      "speed"
+    ],
+    "Grid": [
+      "target",
+      "coins",
+      "walls",
+      "size"
+    ],
+    "Level": [
+      "moves",
+      "score",
+      "maxMoves",
+      "requiredScore"
+    ],
+    "console": [
+      "log"
+    ]
+  },
+  "defaultCode": {
+    "en": "// Get Coin\n// You need to reach the target to pass!\n\n",
+    "zh": "// 获取金币\n// 需要达到目标才能过关！\n\n"
+  },
+  "difficulty": 1,
+  "victoryConditions": {
+    "requiredScore": 1
+  }
+}

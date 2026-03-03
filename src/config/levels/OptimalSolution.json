@@ -1,0 +1,112 @@
+{
+  "id": "OptimalSolution",
+  "name": {
+    "en": "Optimal Solution",
+    "zh": "最优解"
+  },
+  "gridSize": 7,
+  "startPos": {
+    "x": 0,
+    "y": 0,
+    "dir": "S"
+  },
+  "targetPos": {
+    "x": 6,
+    "y": 6
+  },
+  "walls": [
+    {
+      "x": 3,
+      "y": 5
+    },
+    {
+      "x": 3,
+      "y": 3
+    },
+    {
+      "x": 3,
+      "y": 1
+    },
+    {
+      "x": 2,
+      "y": 5
+    },
+    {
+      "x": 4,
+      "y": 5
+    },
+    {
+      "x": 2,
+      "y": 3
+    },
+    {
+      "x": 4,
+      "y": 3
+    },
+    {
+      "x": 2,
+      "y": 1
+    },
+    {
+      "x": 4,
+      "y": 1
+    }
+  ],
+  "coins": [
+    {
+      "x": 3,
+      "y": 2,
+      "tier": 1
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "tier": 1
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "tier": 1
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "tier": 1
+    }
+  ],
+  "availableCommands": {
+    "Robot": [
+      "moveForward",
+      "turnLeft",
+      "turnRight",
+      "x",
+      "y",
+      "direction",
+      "speed"
+    ],
+    "Grid": [
+      "size",
+      "walls",
+      "coins",
+      "target"
+    ],
+    "Level": [
+      "requiredScore",
+      "maxMoves",
+      "score",
+      "moves"
+    ],
+    "console": [
+      "log"
+    ]
+  },
+  "defaultCode": {
+    "en": "// Optimal Solution\n// Find the optimal solution to complete this level?!\n\n",
+    "zh": "// 最优解\n// 找到完成此关卡的最优解？！\n\n"
+  },
+  "difficulty": 3,
+  "victoryConditions": {
+    "maxMoves": 16,
+    "requiredScore": 2
+  }
+}

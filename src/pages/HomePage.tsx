@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Play, Settings, Info } from 'lucide-react';
+import { Play, Settings, Info, Code } from 'lucide-react';
 import { LEVELS, TRANSLATIONS, createHoverAnimation } from '../config';
 import { BackgroundGrid } from '../components/BackgroundGrid';
 import { GameGrid } from '../components/GameGrid';
@@ -156,6 +156,17 @@ export function HomePage() {
               <Info size={20} />
               <span>{t.about}</span>
             </motion.button>
+
+            {import.meta.env.DEV && (
+              <motion.button
+                {...createHoverAnimation(1.02, 0.2)}
+                onClick={() => navigate('/editor')}
+                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-semibold border border-purple-400/30 transition-all flex items-center justify-center gap-3 shadow-lg shadow-purple-500/20"
+              >
+                <Code size={20} />
+                <span>关卡编辑器 (Dev)</span>
+              </motion.button>
+            )}
           </motion.div>
         </div>
 

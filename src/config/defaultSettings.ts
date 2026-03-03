@@ -22,9 +22,9 @@ export interface Settings {
 }
 
 export interface GameProgress {
-  unlockedLevelIndex: number;
   completedLevels: string[]; // Array of level IDs
   savedCode: Record<string, string>; // levelId -> code
+  unlockedDifficulty: number; // Current unlocked difficulty level
 }
 
 export interface StoreState {
@@ -56,9 +56,9 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export const DEFAULT_PROGRESS: GameProgress = {
-  unlockedLevelIndex: 0,
   completedLevels: [],
   savedCode: {},
+  unlockedDifficulty: 0,
 };
 
 export const DEFAULT_STORE_STATE: StoreState = {

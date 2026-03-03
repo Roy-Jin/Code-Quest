@@ -1,0 +1,80 @@
+{
+  "id": "TurnLeft",
+  "name": {
+    "en": "Turn Left",
+    "zh": "左转弯"
+  },
+  "gridSize": 5,
+  "startPos": {
+    "x": 0,
+    "y": 0,
+    "dir": "S"
+  },
+  "targetPos": {
+    "x": 4,
+    "y": 4
+  },
+  "walls": [
+    {
+      "x": 1,
+      "y": 0
+    },
+    {
+      "x": 1,
+      "y": 1
+    },
+    {
+      "x": 1,
+      "y": 2
+    },
+    {
+      "x": 2,
+      "y": 3
+    },
+    {
+      "x": 4,
+      "y": 3
+    },
+    {
+      "x": 3,
+      "y": 3
+    },
+    {
+      "x": 2,
+      "y": 2
+    },
+    {
+      "x": 3,
+      "y": 1
+    },
+    {
+      "x": 4,
+      "y": 0
+    },
+    {
+      "x": 1,
+      "y": 3
+    }
+  ],
+  "coins": [],
+  "availableCommands": {
+    "Robot": [
+      "moveForward",
+      "turnRight",
+      "turnLeft"
+    ],
+    "Grid": [],
+    "Level": [],
+    "console": [
+      "log"
+    ]
+  },
+  "defaultCode": {
+    "en": "// Turn Left\n// Use the Robot.turnLeft() method to make the robot turn left\n\n",
+    "zh": "// 左转弯\n// 使用 Robot.turnLeft() 方法使机器人左转\n\n"
+  },
+  "difficulty": 0,
+  "victoryConditions": {
+    "requiredScore": 0
+  }
+}

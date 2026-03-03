@@ -16,8 +16,6 @@ export function GamePage() {
   const { settings, progress, updateProgress } = useStore();
   const t = TRANSLATIONS[settings.language];
 
-  const unlockedLevelIndex = progress.unlockedLevelIndex;
-
   // Find level index based on ID
   const currentLevelIndex = LEVELS.findIndex(l => l.id === levelId);
   const levelConfig = LEVELS[currentLevelIndex];
@@ -29,13 +27,16 @@ export function GamePage() {
       return;
     }
 
-    if (currentLevelIndex > unlockedLevelIndex) {
+    // Check if level is unlocked based on difficulty
+    const isUnlocked = levelConfig.difficulty <= progress.unlockedDifficulty;
+    if (!isUnlocked) {
       navigate('/levels');
     }
-  }, [currentLevelIndex, unlockedLevelIndex, navigate]);
+  }, [currentLevelIndex, navigate, levelConfig, progress.unlockedDifficulty]);
 
   // If levelConfig is undefined (during redirect) or level is locked, don't render
-  if (!levelConfig || currentLevelIndex > unlockedLevelIndex) return null;
+  const isLevelUnlocked = levelConfig && levelConfig.difficulty <= progress.unlockedDifficulty;
+  if (!levelConfig || !isLevelUnlocked) return null;
   
   const [code, setCode] = useState<string>(() => {
     return progress.savedCode[levelId || ''] || levelConfig.defaultCode[settings.language];
@@ -59,11 +60,35 @@ export function GamePage() {
   }, [code, levelId, progress.savedCode, updateProgress]);
 
   const handleSuccess = useCallback(() => {
-    const next = Math.max(unlockedLevelIndex, currentLevelIndex + 1);
-    if (next > unlockedLevelIndex) {
-      updateProgress({ unlockedLevelIndex: next });
+    // Mark current level as completed
+    const newCompletedLevels = progress.completedLevels.includes(levelConfig.id)
+      ? progress.completedLevels
+      : [...progress.completedLevels, levelConfig.id];
+    
+    // Calculate new unlocked difficulty
+    const difficulties = Array.from(new Set(LEVELS.map(l => l.difficulty))).sort((a, b) => a - b);
+    let newUnlockedDifficulty = progress.unlockedDifficulty;
+    
+    // Check if current difficulty is fully completed
+    const currentDifficultyLevels = LEVELS.filter(l => l.difficulty === levelConfig.difficulty);
+    const currentDifficultyCompleted = currentDifficultyLevels.every(l => 
+      newCompletedLevels.includes(l.id)
+    );
+    
+    // If current difficulty is completed, unlock next difficulty
+    if (currentDifficultyCompleted) {
+      const currentDifficultyIndex = difficulties.indexOf(levelConfig.difficulty);
+      if (currentDifficultyIndex < difficulties.length - 1) {
+        newUnlockedDifficulty = difficulties[currentDifficultyIndex + 1];
+      }
     }
-  }, [currentLevelIndex, unlockedLevelIndex, updateProgress]);
+    
+    // Update progress
+    updateProgress({
+      completedLevels: newCompletedLevels,
+      unlockedDifficulty: newUnlockedDifficulty
+    });
+  }, [currentLevelIndex, updateProgress, levelConfig, progress.completedLevels, progress.unlockedDifficulty]);
 
   const {
     position,
@@ -135,7 +160,8 @@ export function GamePage() {
         reset={reset}
         currentLevelIndex={currentLevelIndex}
         setCurrentLevelIndex={(idx) => navigate(`/game/${LEVELS[idx].id}`)}
-        unlockedLevelIndex={unlockedLevelIndex}
+        unlockedDifficulty={progress.unlockedDifficulty}
+        completedLevels={progress.completedLevels}
         levels={LEVELS}
         showHomeButton={true}
         onHomeClick={() => navigate('/levels')}

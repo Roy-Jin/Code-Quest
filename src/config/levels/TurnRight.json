@@ -1,0 +1,80 @@
+{
+  "id": "TurnRight",
+  "name": {
+    "en": "Turn Right",
+    "zh": "右转弯"
+  },
+  "gridSize": 5,
+  "startPos": {
+    "x": 0,
+    "y": 0,
+    "dir": "E"
+  },
+  "targetPos": {
+    "x": 4,
+    "y": 4
+  },
+  "walls": [
+    {
+      "x": 0,
+      "y": 1
+    },
+    {
+      "x": 1,
+      "y": 1
+    },
+    {
+      "x": 2,
+      "y": 1
+    },
+    {
+      "x": 3,
+      "y": 2
+    },
+    {
+      "x": 3,
+      "y": 1
+    },
+    {
+      "x": 3,
+      "y": 3
+    },
+    {
+      "x": 3,
+      "y": 4
+    },
+    {
+      "x": 2,
+      "y": 2
+    },
+    {
+      "x": 1,
+      "y": 3
+    },
+    {
+      "x": 0,
+      "y": 4
+    }
+  ],
+  "coins": [],
+  "availableCommands": {
+    "Robot": [
+      "moveForward",
+      "turnRight",
+      "turnLeft"
+    ],
+    "Grid": [],
+    "Level": [],
+    "console": [
+      "log"
+    ]
+  },
+  "defaultCode": {
+    "en": "// Turn Right\n// Watch out for these walls!\n// And use the Robot.turnRight() method to make the robot turn right\n\n",
+    "zh": "// 右转弯\n// 当心这些墙壁！\n// 并且使用 Robot.turnRight() 方法使机器人右转\n\n"
+  },
+  "difficulty": 0,
+  "victoryConditions": {
+    "requiredScore": 0
+  }
+}
