@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { AlertCircle, CheckCircle2, History, Terminal, Code2, X } from 'lucide-react';
 import { TooltipButton } from './TooltipButton';
-import { LevelConfig } from '../types';
-import { COMMAND_REGISTRY } from '../config';
+import { LevelConfig, apiConfigToCommands } from '../types';
+import { generateOOPDefinitions } from '../config';
 import { useStore } from '../context/StoreContext';
 
 interface EditorPaneProps {
@@ -35,9 +35,7 @@ export function EditorPane({
   useEffect(() => {
     if (monaco) {
       // Generate TS definitions based on available commands for the current level
-      const tsDefs = levelConfig.availableCommands
-        .map(cmdId => COMMAND_REGISTRY[cmdId]?.getTsDefinition(settings.language) || '')
-        .join('\n');
+      const tsDefs = generateOOPDefinitions(apiConfigToCommands(levelConfig.availableCommands), settings.language);
 
       const disposable = (monaco.languages.typescript as any).javascriptDefaults.addExtraLib(
         tsDefs,
@@ -46,7 +44,7 @@ export function EditorPane({
 
       return () => disposable.dispose();
     }
-  }, [monaco, levelConfig.availableCommands, settings.language]);
+  }, [monaco, apiConfigToCommands(levelConfig.availableCommands), settings.language]);
 
   // Auto-switch to console on run, error, or success
   useEffect(() => {
@@ -130,7 +128,7 @@ export function EditorPane({
             language="javascript"
             theme="vs-dark"
             value={code}
-            onChange={(value) => setCode(value || '')}
+            onChange={(value: string | undefined) => setCode(value || '')}
             onMount={handleEditorDidMount}
             options={{
               minimap: { enabled: settings.minimap },

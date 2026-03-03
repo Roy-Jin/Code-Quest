@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import * as Babel from '@babel/standalone';
 // @ts-ignore
 import Interpreter from 'js-interpreter';
-import { Position, LevelConfig, Direction, GameState, CoinSystem, Coin } from '../types';
+import { Position, LevelConfig, Direction, GameState, CoinSystem, Coin, CoinTier, apiConfigToCommands } from '../types';
 import { audioManager } from '../utils/audioManager';
 
 const getInitialRotation = (dir: Direction) => {
@@ -80,8 +80,23 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
     };
 
     const initFunc = (interpreter: any, globalObject: any) => {
-      if (levelConfig.availableCommands.includes('moveForward')) {
-        interpreter.setProperty(globalObject, 'moveForward', interpreter.createAsyncFunction(async (callback: any) => {
+      // Create Robot object
+      const robotObj = interpreter.nativeToPseudo({});
+      interpreter.setProperty(globalObject, 'Robot', robotObj);
+      
+      // Create Grid object
+      const gridObj = interpreter.nativeToPseudo({});
+      interpreter.setProperty(globalObject, 'Grid', gridObj);
+      
+      // Create Level object
+      const levelObj = interpreter.nativeToPseudo({});
+      interpreter.setProperty(globalObject, 'Level', levelObj);
+
+      const availableCommands = apiConfigToCommands(levelConfig.availableCommands);
+      
+      // Robot methods
+      if (availableCommands.includes('moveForward')) {
+        interpreter.setProperty(robotObj, 'moveForward', interpreter.createAsyncFunction(async (callback: any) => {
           try {
             await waitForPause();
             await new Promise(resolve => setTimeout(resolve, currentSpeed));
@@ -89,7 +104,7 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
 
             gameState.incrementMoveCount();
             setMoveCount(gameState.moveCount);
-            setLogs(prev => [...prev, 'moveForward()']);
+            setLogs((prev: string[]) => [...prev, 'Robot.moveForward()']);
             
             let newX = currentPos.x;
             let newY = currentPos.y;
@@ -117,7 +132,7 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
                   setScore(gameState.score);
                   setVisibleCoins(new Map(gameState.visibleCoins));
                   const points = CoinSystem.getScore(visibleCoin.tier);
-                  setLogs(prev => [...prev, `Coin collected! +${points} points (Total: ${gameState.score})`]);
+                  setLogs((prev: string[]) => [...prev, `Coin collected! +${points} points (Total: ${gameState.score})`]);
                   
                   // Play coin collection sound effect
                   audioManager.playSoundEffect('coinGet');
@@ -127,8 +142,8 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
               // Check for pressure plate activation
               const plate = pressurePlates.find(p => p.x === newX && p.y === newY);
               if (plate) {
-                const tierNames = { 1: 'Wood', 2: 'Silver', 3: 'Gold', 4: 'Diamond' };
-                setLogs(prev => [...prev, `${tierNames[plate.tier]} pressure plate activated! Resetting ${tierNames[plate.tier]} coins...`]);
+                const tierNames: Record<CoinTier, string> = { 1: 'Wood', 2: 'Silver', 3: 'Gold', 4: 'Diamond' };
+                setLogs((prev: string[]) => [...prev, `${tierNames[plate.tier]} pressure plate activated! Resetting ${tierNames[plate.tier]} coins...`]);
                 gameState.resetCoinsByTier(coins, plate.tier);
                 setVisibleCoins(new Map(gameState.visibleCoins));
               }
@@ -146,14 +161,14 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
         }));
       }
       
-      if (levelConfig.availableCommands.includes('turnLeft')) {
-        interpreter.setProperty(globalObject, 'turnLeft', interpreter.createAsyncFunction(async (callback: any) => {
+      if (availableCommands.includes('turnLeft')) {
+        interpreter.setProperty(robotObj, 'turnLeft', interpreter.createAsyncFunction(async (callback: any) => {
           try {
             await waitForPause();
             await new Promise(resolve => setTimeout(resolve, currentSpeed));
             await waitForPause();
             
-            setLogs(prev => [...prev, 'turnLeft()']);
+            setLogs((prev: string[]) => [...prev, 'Robot.turnLeft()']);
             const dirs: Direction[] = ['N', 'W', 'S', 'E'];
             currentPos = { 
               ...currentPos, 
@@ -168,14 +183,14 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
         }));
       }
 
-      if (levelConfig.availableCommands.includes('turnRight')) {
-        interpreter.setProperty(globalObject, 'turnRight', interpreter.createAsyncFunction(async (callback: any) => {
+      if (availableCommands.includes('turnRight')) {
+        interpreter.setProperty(robotObj, 'turnRight', interpreter.createAsyncFunction(async (callback: any) => {
           try {
             await waitForPause();
             await new Promise(resolve => setTimeout(resolve, currentSpeed));
             await waitForPause();
             
-            setLogs(prev => [...prev, 'turnRight()']);
+            setLogs((prev: string[]) => [...prev, 'Robot.turnRight()']);
             const dirs: Direction[] = ['N', 'E', 'S', 'W'];
             currentPos = { 
               ...currentPos, 
@@ -190,7 +205,125 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
         }));
       }
 
-      if (levelConfig.availableCommands.includes('log')) {
+      // Robot properties (read-only getters)
+      if (availableCommands.includes('robotX')) {
+        Object.defineProperty(robotObj.properties, 'x', {
+          get: () => interpreter.nativeToPseudo(currentPos.x),
+          enumerable: true,
+          configurable: false
+        });
+      }
+      
+      if (availableCommands.includes('robotY')) {
+        Object.defineProperty(robotObj.properties, 'y', {
+          get: () => interpreter.nativeToPseudo(currentPos.y),
+          enumerable: true,
+          configurable: false
+        });
+      }
+      
+      if (availableCommands.includes('robotDir')) {
+        Object.defineProperty(robotObj.properties, 'direction', {
+          get: () => interpreter.nativeToPseudo(currentPos.dir),
+          enumerable: true,
+          configurable: false
+        });
+      }
+      
+      if (availableCommands.includes('robotSpeed')) {
+        // Speed is read-write, use a simple property that gets updated
+        interpreter.setProperty(robotObj, 'speed', interpreter.nativeToPseudo(currentSpeed));
+        
+        // Override with getter/setter
+        const speedDescriptor = {
+          configurable: true,
+          enumerable: true,
+          get: interpreter.createNativeFunction(() => {
+            return currentSpeed;
+          }),
+          set: interpreter.createNativeFunction((speed: number) => {
+            currentSpeed = speed;
+            setSpeedState(speed);
+            setLogs((prev: string[]) => [...prev, `Robot.speed = ${speed}`]);
+          })
+        };
+        
+        interpreter.setProperty(robotObj, 'speed', speedDescriptor.get);
+        
+        // Intercept property writes
+        Object.defineProperty(robotObj.properties, 'speed', {
+          get: () => interpreter.nativeToPseudo(currentSpeed),
+          set: (value: any) => {
+            const nativeValue = interpreter.pseudoToNative(value);
+            currentSpeed = nativeValue;
+            setSpeedState(nativeValue);
+            setLogs((prev: string[]) => [...prev, `Robot.speed = ${nativeValue}`]);
+          },
+          enumerable: true,
+          configurable: true
+        });
+      }
+
+      // Grid properties (read-only)
+      if (availableCommands.includes('gridSize')) {
+        interpreter.setProperty(gridObj, 'size',
+          interpreter.nativeToPseudo(levelConfig.gridSize)
+        );
+      }
+      
+      if (availableCommands.includes('gridWalls')) {
+        interpreter.setProperty(gridObj, 'walls',
+          interpreter.nativeToPseudo(levelConfig.walls || [])
+        );
+      }
+      
+      if (availableCommands.includes('gridCoins')) {
+        interpreter.setProperty(gridObj, 'coins',
+          interpreter.nativeToPseudo(levelConfig.coins || [])
+        );
+      }
+      
+      if (availableCommands.includes('gridTarget')) {
+        interpreter.setProperty(gridObj, 'target',
+          interpreter.nativeToPseudo(levelConfig.targetPos)
+        );
+      }
+
+      // Level properties (read-only)
+      if (availableCommands.includes('requiredScore')) {
+        Object.defineProperty(levelObj.properties, 'requiredScore', {
+          get: () => interpreter.nativeToPseudo(levelConfig.victoryConditions?.requiredScore ?? 0),
+          enumerable: true,
+          configurable: false
+        });
+      }
+      
+      if (availableCommands.includes('maxMoves')) {
+        Object.defineProperty(levelObj.properties, 'maxMoves', {
+          get: () => interpreter.nativeToPseudo(levelConfig.victoryConditions?.maxMoves ?? -1),
+          enumerable: true,
+          configurable: false
+        });
+      }
+      
+      if (availableCommands.includes('currentScore')) {
+        Object.defineProperty(levelObj.properties, 'score', {
+          get: () => interpreter.nativeToPseudo(gameState.score),
+          enumerable: true,
+          configurable: false
+        });
+      }
+      
+      if (availableCommands.includes('currentMoves')) {
+        Object.defineProperty(levelObj.properties, 'moves', {
+          get: () => interpreter.nativeToPseudo(gameState.moveCount),
+          enumerable: true,
+          configurable: false
+        });
+      }
+
+      // Console.log
+      if (availableCommands.includes('log')) {
         const consoleObj = interpreter.nativeToPseudo({});
         interpreter.setProperty(globalObject, 'console', consoleObj);
         interpreter.setProperty(consoleObj, 'log', interpreter.createNativeFunction((...args: any[]) => {
@@ -202,54 +335,7 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
               return String(arg);
             }
           }).join(' ');
-          setLogs(prev => [...prev, str]);
-        }));
-      }
-
-      if (levelConfig.availableCommands.includes('getGrid')) {
-        interpreter.setProperty(globalObject, 'getGrid', interpreter.createNativeFunction(() => {
-          return interpreter.nativeToPseudo({
-            size: levelConfig.gridSize,
-            walls: levelConfig.walls,
-            coins: levelConfig.coins,
-            targetPos: levelConfig.targetPos,
-            startPos: levelConfig.startPos
-          });
-        }));
-      }
-
-      if (levelConfig.availableCommands.includes('getRobotState')) {
-        interpreter.setProperty(globalObject, 'getRobotState', interpreter.createNativeFunction(() => {
-          return interpreter.nativeToPseudo({ x: currentPos.x, y: currentPos.y, dir: currentPos.dir });
-        }));
-      }
-
-      if (levelConfig.availableCommands.includes('getObjectives')) {
-        interpreter.setProperty(globalObject, 'getObjectives', interpreter.createNativeFunction(() => {
-          return interpreter.nativeToPseudo({
-            requiredScore: levelConfig.victoryConditions?.requiredScore ?? 0,
-            maxMoves: levelConfig.victoryConditions?.maxMoves ?? -1
-          });
-        }));
-      }
-
-      if (levelConfig.availableCommands.includes('getCurrentState')) {
-        interpreter.setProperty(globalObject, 'getCurrentState', interpreter.createNativeFunction(() => {
-          return interpreter.nativeToPseudo({ score: gameState.score, moves: gameState.moveCount });
-        }));
-      }
-
-      if (levelConfig.availableCommands.includes('setSpeed')) {
-        interpreter.setProperty(globalObject, 'setSpeed', interpreter.createNativeFunction((speed: number) => {
-          currentSpeed = speed;
-          setSpeedState(speed);
-          setLogs(prev => [...prev, `setSpeed(${speed})`]);
-        }));
-      }
-
-      if (levelConfig.availableCommands.includes('getSpeed')) {
-        interpreter.setProperty(globalObject, 'getSpeed', interpreter.createNativeFunction(() => {
-          return currentSpeed;
+          setLogs((prev: string[]) => [...prev, str]);
         }));
       }
     };

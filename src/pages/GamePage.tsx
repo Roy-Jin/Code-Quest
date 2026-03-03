@@ -6,6 +6,7 @@ import { Header } from '../components/Header';
 import { GameGrid } from '../components/GameGrid';
 import { EditorPane } from '../components/EditorPane';
 import { PageTransition } from '../components/PageTransition';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useGameEngine } from '../hooks/useGameEngine';
 import { useStore } from '../context/StoreContext';
 
@@ -40,6 +41,7 @@ export function GamePage() {
     return progress.savedCode[levelId || ''] || levelConfig.defaultCode[settings.language];
   });
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   // Auto-save code to store
   useEffect(() => {
@@ -97,6 +99,15 @@ export function GamePage() {
     if (hasNextLevel) {
       navigate(`/game/${LEVELS[currentLevelIndex + 1].id}`);
     }
+  };
+
+  const handleResetCode = () => {
+    setShowResetConfirm(true);
+  };
+
+  const confirmResetCode = () => {
+    setCode(levelConfig.defaultCode[settings.language]);
+    setShowResetConfirm(false);
   };
 
   // Auto-open mobile editor drawer on error or success
@@ -171,7 +182,7 @@ export function GamePage() {
             code={code}
             setCode={setCode}
             isRunning={isRunning}
-            resetCode={() => setCode(levelConfig.defaultCode[settings.language])}
+            resetCode={handleResetCode}
             error={error}
             isSuccess={isSuccess}
             logs={logs}
@@ -181,6 +192,17 @@ export function GamePage() {
           />
         </div>
       </main>
+
+      <ConfirmDialog
+        isOpen={showResetConfirm}
+        title={t.resetCode}
+        message={t.resetCodeConfirm}
+        confirmText={t.confirm}
+        cancelText={t.cancel}
+        type="warning"
+        onConfirm={confirmResetCode}
+        onCancel={() => setShowResetConfirm(false)}
+      />
     </PageTransition>
   );
 }

@@ -51,6 +51,16 @@ export interface VictoryConditions {
 }
 
 /**
+ * Available API namespaces for level configuration
+ */
+export interface AvailableAPIs {
+  Robot?: string[];
+  Grid?: string[];
+  Level?: string[];
+  console?: string[];
+}
+
+/**
  * Complete level configuration
  */
 export interface LevelConfig {
@@ -62,10 +72,59 @@ export interface LevelConfig {
   walls: { x: number; y: number }[];
   coins: Coin[];
   pressurePlates?: PressurePlate[];
-  availableCommands: string[];
+  availableCommands: AvailableAPIs;
   defaultCode: { en: string; zh: string };
   victoryConditions?: VictoryConditions;
   difficulty: number;
+}
+
+/**
+ * Helper to convert API configuration to command list
+ */
+export function apiConfigToCommands(apis: AvailableAPIs): string[] {
+  const commands: string[] = [];
+  
+  if (apis.Robot) {
+    apis.Robot.forEach(item => {
+      if (['moveForward', 'turnLeft', 'turnRight'].includes(item)) {
+        commands.push(item);
+      } else if (item === 'x') {
+        commands.push('robotX');
+      } else if (item === 'y') {
+        commands.push('robotY');
+      } else if (item === 'direction') {
+        commands.push('robotDir');
+      } else if (item === 'speed') {
+        commands.push('robotSpeed');
+      }
+    });
+  }
+  
+  if (apis.Grid) {
+    apis.Grid.forEach(item => {
+      if (item === 'size') commands.push('gridSize');
+      else if (item === 'walls') commands.push('gridWalls');
+      else if (item === 'coins') commands.push('gridCoins');
+      else if (item === 'target') commands.push('gridTarget');
+    });
+  }
+  
+  if (apis.Level) {
+    apis.Level.forEach(item => {
+      if (item === 'requiredScore') commands.push('requiredScore');
+      else if (item === 'maxMoves') commands.push('maxMoves');
+      else if (item === 'score') commands.push('currentScore');
+      else if (item === 'moves') commands.push('currentMoves');
+    });
+  }
+  
+  if (apis.console) {
+    if (apis.console.includes('log')) {
+      commands.push('log');
+    }
+  }
+  
+  return commands;
 }
 
 /**
