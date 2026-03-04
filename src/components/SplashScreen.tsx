@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Zap, Sparkles, Languages } from 'lucide-react';
+import { Zap, Sparkles, Languages, RefreshCw } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { TRANSLATIONS } from '../config';
 
 interface SplashScreenProps {
   onComplete: () => void;
+  updateAvailable?: boolean;
+  onUpdate?: () => void;
 }
 
-export function SplashScreen({ onComplete }: SplashScreenProps) {
+export function SplashScreen({ onComplete, updateAvailable = false, onUpdate }: SplashScreenProps) {
   const { settings, updateSettings } = useStore();
   const t = TRANSLATIONS[settings.language];
   const [progress, setProgress] = useState(0);
@@ -201,34 +203,102 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           {/* Enter Button */}
           <AnimatePresence>
             {showButton && (
-              <motion.button
+              <motion.div
                 initial={{ opacity: 0, scale: 0.5, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onComplete}
-                className="group relative px-12 py-5 bg-linear-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-2xl font-bold text-xl shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all overflow-hidden"
+                className="flex flex-col items-center gap-3"
               >
-                {/* Button Shine Effect */}
-                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                
-                <span className="relative z-10 flex items-center gap-3">
-                  <Sparkles className="w-6 h-6" />
-                  {t.letsGo}
-                  <motion.span
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1, repeat: Infinity }}
+                {updateAvailable ? (
+                  <>
+                    {/* Update Badge */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 border border-amber-400/30 rounded-full backdrop-blur-sm"
+                    >
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      >
+                        <RefreshCw className="w-4 h-4 text-amber-400" />
+                      </motion.div>
+                      <span className="text-amber-200 text-sm font-medium">
+                        {t.newVersionAvailable}
+                      </span>
+                    </motion.div>
+                    
+                    {/* Update Button */}
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={onUpdate}
+                      className="group relative px-12 py-5 bg-linear-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white rounded-2xl font-bold text-xl shadow-2xl shadow-amber-500/30 hover:shadow-amber-500/50 transition-all overflow-hidden"
+                    >
+                      {/* Shine Effect */}
+                      <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                      
+                      {/* Pulse Ring */}
+                      <motion.div
+                        className="absolute inset-0 border-2 border-white/50 rounded-2xl"
+                        animate={{ 
+                          scale: [1, 1.05, 1],
+                          opacity: [0.5, 0, 0.5]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                      
+                      <span className="relative z-10 flex items-center gap-3">
+                        <Sparkles className="w-6 h-6" />
+                        {t.refreshNow}
+                        <motion.span
+                          animate={{ x: [0, 5, 0] }}
+                          transition={{ duration: 1, repeat: Infinity }}
+                        >
+                          →
+                        </motion.span>
+                      </span>
+                    </motion.button>
+                    
+                    {/* Later Button */}
+                    <motion.button
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={onComplete}
+                      className="px-6 py-2 text-slate-400 hover:text-slate-200 text-sm font-medium transition-colors"
+                    >
+                      {t.later}
+                    </motion.button>
+                  </>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={onComplete}
+                    className="group relative px-12 py-5 bg-linear-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-2xl font-bold text-xl shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all overflow-hidden"
                   >
-                    →
-                  </motion.span>
-                </span>
-              </motion.button>
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                    <span className="relative z-10 flex items-center gap-3">
+                      <Sparkles className="w-6 h-6" />
+                      {t.letsGo}
+                      <motion.span
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      >
+                        →
+                      </motion.span>
+                    </span>
+                  </motion.button>
+                )}
+              </motion.div>
             )}
           </AnimatePresence>
 
           {/* Hint Text */}
-          {showButton && (
+          {showButton && !updateAvailable && (
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
