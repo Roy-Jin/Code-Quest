@@ -49,7 +49,7 @@ export function Header({
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="h-14 border-b border-slate-800 bg-slate-900 flex items-center justify-between px-4 shrink-0 z-[60]"
+      className="h-14 border-b border-slate-800 bg-slate-900 flex items-center justify-between px-4 shrink-0 z-60"
     >
       <div className="flex items-center gap-2 md:gap-4">
         {showHomeButton && (
@@ -72,9 +72,9 @@ export function Header({
           <button
             onClick={() => !isRunning && setIsLevelMenuOpen(!isLevelMenuOpen)}
             disabled={isRunning}
-            className={`flex items-center gap-2 bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-md px-3 py-1.5 hover:bg-slate-700 hover:border-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed min-w-[160px] justify-between ${isLevelMenuOpen ? 'ring-2 ring-cyan-500/50 border-cyan-500/50' : ''}`}
+            className={`flex items-center gap-2 bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-md px-3 py-1.5 hover:bg-slate-700 hover:border-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed min-w-40 justify-between ${isLevelMenuOpen ? 'ring-2 ring-cyan-500/50 border-cyan-500/50' : ''}`}
           >
-            <span className="truncate max-w-[150px] font-medium">
+            <span className="truncate max-w-37.5 font-medium">
               {t.level} {currentLevelIndex + 1}: {levels[currentLevelIndex]?.name[lang]}
             </span>
             <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 ${isLevelMenuOpen ? 'rotate-180' : ''}`} />
@@ -116,7 +116,7 @@ export function Header({
                       }`}
                     >
                       <div className="flex items-center gap-3 overflow-hidden">
-                        <span className={`flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-md text-xs font-mono ${
+                        <span className={`shrink-0 w-6 h-6 flex items-center justify-center rounded-md text-xs font-mono ${
                           isSelected ? 'bg-cyan-500/20 text-cyan-400' : isUnlocked ? 'bg-slate-800 text-slate-400 group-hover:bg-slate-700 group-hover:text-slate-300' : 'bg-slate-800/50 text-slate-600'
                         }`}>
                           {idx + 1}
@@ -126,8 +126,8 @@ export function Header({
                         </span>
                       </div>
                       
-                      {isSelected && <Check size={14} className="text-cyan-400 flex-shrink-0" />}
-                      {!isUnlocked && <Lock size={14} className="text-slate-600 flex-shrink-0" />}
+                      {isSelected && <Check size={14} className="text-cyan-400 shrink-0" />}
+                      {!isUnlocked && <Lock size={14} className="text-slate-600 shrink-0" />}
                     </button>
                   );
                 })}

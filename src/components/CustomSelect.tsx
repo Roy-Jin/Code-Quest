@@ -122,7 +122,7 @@ export function CustomSelect({ value, onChange, options, className = '' }: Custo
                       {option.label}
                     </span>
                     
-                    {isSelected && <Check size={14} className="text-cyan-400 flex-shrink-0" />}
+                    {isSelected && <Check size={14} className="text-cyan-400 shrink-0" />}
                   </button>
                 );
               })}

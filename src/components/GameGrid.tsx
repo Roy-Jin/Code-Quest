@@ -151,7 +151,7 @@ export function GameGrid({ t, lang, levelConfig, position, score, visibleCoins, 
             
             {/* Pressure Plate Rendering */}
             {plate && !isWall && (
-              <div className={`w-3/4 h-3/4 rounded-lg bg-gradient-to-br ${CoinSystem.PLATE_COLORS[plate.tier].gradient} border-2 ${CoinSystem.PLATE_COLORS[plate.tier].border} ${CoinSystem.PLATE_COLORS[plate.tier].shadow} flex items-center justify-center`}>
+              <div className={`w-3/4 h-3/4 rounded-lg bg-linear-to-br ${CoinSystem.PLATE_COLORS[plate.tier].gradient} border-2 ${CoinSystem.PLATE_COLORS[plate.tier].border} ${CoinSystem.PLATE_COLORS[plate.tier].shadow} flex items-center justify-center`}>
                 <div className="w-1/2 h-1/2 rounded border border-white/20" />
               </div>
             )}
@@ -168,7 +168,7 @@ export function GameGrid({ t, lang, levelConfig, position, score, visibleCoins, 
                   style={{ perspective: '1000px' }}
                 >
                   {/* Coin Body */}
-                  <div className={`absolute inset-0 rounded-full bg-gradient-to-tr ${CoinSystem.TIER_COLORS[visibleCoin.tier].gradient} ${CoinSystem.TIER_COLORS[visibleCoin.tier].shadow} border-2 ${CoinSystem.TIER_COLORS[visibleCoin.tier].border} flex items-center justify-center`}>
+                  <div className={`absolute inset-0 rounded-full bg-linear-to-tr ${CoinSystem.TIER_COLORS[visibleCoin.tier].gradient} ${CoinSystem.TIER_COLORS[visibleCoin.tier].shadow} border-2 ${CoinSystem.TIER_COLORS[visibleCoin.tier].border} flex items-center justify-center`}>
                     {/* Coin Detail (Inner Ring) */}
                     <div className="w-[70%] h-[70%] rounded-full border border-white/30 flex items-center justify-center bg-black/20">
                       {/* Tier indicator with better contrast */}
@@ -192,12 +192,12 @@ export function GameGrid({ t, lang, levelConfig, position, score, visibleCoins, 
                   {/* Shine Effects */}
                   <div className="absolute top-1 left-1 w-1/4 h-1/4 bg-white/60 rounded-full blur-[1px] animate-pulse" />
                   <div className="absolute bottom-2 right-2 w-1/6 h-1/6 bg-white/40 rounded-full blur-[1px] animate-pulse delay-75" />
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-tr from-transparent via-white/10 to-transparent rounded-full" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-linear-to-tr from-transparent via-white/10 to-transparent rounded-full" />
                   {/* Diamond sparkle effect */}
                   {visibleCoin.tier === 4 && (
                     <>
-                      <div className="absolute top-0 left-1/2 w-[2px] h-full bg-gradient-to-b from-transparent via-white to-transparent animate-pulse" />
-                      <div className="absolute left-0 top-1/2 h-[2px] w-full bg-gradient-to-r from-transparent via-white to-transparent animate-pulse delay-150" />
+                      <div className="absolute top-0 left-1/2 w-0.5 h-full bg-linear-to-b from-transparent via-white to-transparent animate-pulse" />
+                      <div className="absolute left-0 top-1/2 h-0.5 w-full bg-linear-to-r from-transparent via-white to-transparent animate-pulse delay-150" />
                     </>
                   )}
                 </motion.div>
@@ -274,7 +274,7 @@ export function GameGrid({ t, lang, levelConfig, position, score, visibleCoins, 
                   animate={{ opacity: 1, y: -50, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 1.2, ease: 'easeOut' }}
-                  className="fixed z-[9999] pointer-events-none"
+                  className="fixed z-9999 pointer-events-none"
                   style={{
                     left: `${popupX}px`,
                     top: `${popupY}px`,
@@ -312,7 +312,7 @@ export function GameGrid({ t, lang, levelConfig, position, score, visibleCoins, 
             
             return (
               <div
-                className="fixed z-[9999] bg-slate-900/95 backdrop-blur-sm px-3 py-2 rounded-lg shadow-xl border border-slate-700 text-xs text-slate-200 pointer-events-none whitespace-nowrap"
+                className="fixed z-9999 bg-slate-900/95 backdrop-blur-sm px-3 py-2 rounded-lg shadow-xl border border-slate-700 text-xs text-slate-200 pointer-events-none whitespace-nowrap"
                 style={{
                   left: `${tooltipX}px`,
                   top: `${tooltipY}px`,

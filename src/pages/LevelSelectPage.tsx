@@ -45,7 +45,7 @@ export function LevelSelectPage() {
             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <img src="/icons/icon.svg" alt="CQ Logo" className="w-8 h-8 md:w-10 md:h-10 rounded-lg shadow-lg shadow-blue-500/20" />
             </Link>
-            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            <h1 className="text-xl md:text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
               {t.title}
             </h1>
           </div>
@@ -105,7 +105,7 @@ export function LevelSelectPage() {
                 >
                   <div className={`px-4 py-2 rounded-lg border ${
                     isDifficultyUnlocked
-                      ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/30'
+                      ? 'bg-linear-to-r from-blue-500/10 to-purple-500/10 border-blue-500/30'
                       : 'bg-slate-900/50 border-slate-800'
                   }`}>
                     <span className={`text-lg font-bold ${
@@ -173,11 +173,11 @@ export function LevelSelectPage() {
                           {isUnlocked && (
                             <>
                               <motion.div
-                                className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100"
+                                className="absolute inset-0 bg-linear-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100"
                                 transition={{ duration: 0.3 }}
                               />
                               <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+                                className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent"
                                 initial={{ x: '-100%' }}
                                 whileHover={{ x: '200%' }}
                                 transition={{ duration: 0.6 }}

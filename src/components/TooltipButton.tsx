@@ -47,7 +47,7 @@ export function TooltipButton({ icon, tooltip, tooltipAlign = 'center', classNam
       </button>
       {isHovered && createPortal(
         <div 
-          className={`fixed px-2.5 py-1.5 bg-slate-700 text-slate-100 text-xs font-medium rounded shadow-lg whitespace-nowrap pointer-events-none z-[9999] transition-opacity duration-200 ${tooltipAlignClass}`}
+          className={`fixed px-2.5 py-1.5 bg-slate-700 text-slate-100 text-xs font-medium rounded shadow-lg whitespace-nowrap pointer-events-none z-9999 transition-opacity duration-200 ${tooltipAlignClass}`}
           style={{
             left: `${tooltipPosition.x}px`,
             top: `${tooltipPosition.y}px`,

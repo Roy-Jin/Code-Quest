@@ -114,7 +114,7 @@ export function HomePage() {
               <span className="text-slate-300 font-medium tracking-wide">v{__APP_VERSION__}</span>
             </div>
 
-            <h1 className="text-4xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 mb-6 tracking-tight leading-tight">
+            <h1 className="text-4xl lg:text-6xl font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 via-blue-500 to-purple-600 mb-6 tracking-tight leading-tight">
               {t.title}
             </h1>
 
@@ -132,7 +132,7 @@ export function HomePage() {
             <motion.button
               {...createHoverAnimation(1.02, 0.2)}
               onClick={() => navigate('/levels')}
-              className="group relative px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all flex items-center justify-center gap-3 overflow-hidden"
+              className="group relative px-8 py-4 bg-linear-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all flex items-center justify-center gap-3 overflow-hidden"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
               <Play className="fill-current relative z-10" />
@@ -160,7 +160,7 @@ export function HomePage() {
               <motion.button
                 {...createHoverAnimation(1.02, 0.2)}
                 onClick={() => navigate('/editor')}
-                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-semibold border border-purple-400/30 transition-all flex items-center justify-center gap-3 shadow-lg shadow-purple-500/20"
+                className="px-8 py-4 bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-semibold border border-purple-400/30 transition-all flex items-center justify-center gap-3 shadow-lg shadow-purple-500/20"
               >
                 <Code size={20} />
                 <span>{t.levelEditorDev}</span>
@@ -178,7 +178,7 @@ export function HomePage() {
             className="relative w-full max-w-lg aspect-square"
             style={{ perspective: '1000px' }}
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 to-purple-500/10 rounded-3xl blur-3xl -z-10" />
+            <div className="absolute inset-0 bg-linear-to-tr from-cyan-500/10 to-purple-500/10 rounded-3xl blur-3xl -z-10" />
 
             <div className="w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50 bg-slate-950/80 backdrop-blur-sm transform rotate-y-12 hover:rotate-y-0 transition-transform duration-500">
               <GameGrid

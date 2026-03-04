@@ -190,7 +190,7 @@ const LevelEditorPage = () => {
 
             {/* Pressure Plate */}
             {plate && !isWall && (
-              <div className={`w-3/4 h-3/4 rounded-lg bg-gradient-to-br ${CoinSystem.PLATE_COLORS[plate.tier].gradient} border-2 ${CoinSystem.PLATE_COLORS[plate.tier].border} ${CoinSystem.PLATE_COLORS[plate.tier].shadow} flex items-center justify-center`}>
+              <div className={`w-3/4 h-3/4 rounded-lg bg-linear-to-br ${CoinSystem.PLATE_COLORS[plate.tier].gradient} border-2 ${CoinSystem.PLATE_COLORS[plate.tier].border} ${CoinSystem.PLATE_COLORS[plate.tier].shadow} flex items-center justify-center`}>
                 <div className="w-1/2 h-1/2 rounded border border-white/20" />
               </div>
             )}
@@ -198,7 +198,7 @@ const LevelEditorPage = () => {
             {/* Coin */}
             {coin && !isWall && (
               <div className="w-1/2 h-1/2 relative">
-                <div className={`absolute inset-0 rounded-full bg-gradient-to-tr ${CoinSystem.TIER_COLORS[coin.tier].gradient} ${CoinSystem.TIER_COLORS[coin.tier].shadow} border-2 ${CoinSystem.TIER_COLORS[coin.tier].border} flex items-center justify-center`}>
+                <div className={`absolute inset-0 rounded-full bg-linear-to-tr ${CoinSystem.TIER_COLORS[coin.tier].gradient} ${CoinSystem.TIER_COLORS[coin.tier].shadow} border-2 ${CoinSystem.TIER_COLORS[coin.tier].border} flex items-center justify-center`}>
                   <div className="w-[70%] h-[70%] rounded-full border border-white/30 flex items-center justify-center bg-black/20">
                     <div 
                       className="text-[10px] font-black"
@@ -253,7 +253,7 @@ const LevelEditorPage = () => {
           />
           <div className="h-6 w-px bg-slate-700"></div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-linear-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
               <span className="text-sm font-bold">✏️</span>
             </div>
             <h1 className="text-lg font-bold tracking-tight hidden sm:block">{t.levelEditor}</h1>
@@ -371,7 +371,7 @@ const LevelEditorPage = () => {
                     key={tier}
                     onClick={() => setSelectedTier(tier as CoinTier)}
                     className={`w-10 h-10 rounded-lg transition-all ${
-                      CoinSystem.TIER_COLORS[tier as CoinTier].gradient.replace('bg-gradient-to-tr', 'bg-gradient-to-br')
+                      CoinSystem.TIER_COLORS[tier as CoinTier].gradient.replace('bg-linear-to-tr', 'bg-linear-to-br')
                     } ${selectedTier === tier ? 'ring-2 ring-white scale-110' : 'opacity-60 hover:opacity-100'} flex items-center justify-center text-xs font-bold`}
                   >
                     {tier}
