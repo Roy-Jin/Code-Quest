@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Zap, Code, Sparkles, Languages } from 'lucide-react';
+import { Zap, Sparkles, Languages } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { TRANSLATIONS } from '../config';
 
@@ -111,15 +111,18 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             }}
             className="relative"
           >
-            <div className="w-32 h-32 bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-cyan-500/50 relative overflow-hidden">
+            <div className="w-32 h-32 rounded-3xl shadow-2xl shadow-cyan-500/50 relative overflow-hidden">
+              <img 
+                src="/icons/icon.svg" 
+                alt="Logo" 
+                className="w-full h-full object-cover"
+              />
               {/* Shine Effect */}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                 animate={{ x: ['-100%', '200%'] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
               />
-              
-              <Code className="w-16 h-16 text-white relative z-10" strokeWidth={2.5} />
             </div>
 
             {/* Orbiting Icons */}

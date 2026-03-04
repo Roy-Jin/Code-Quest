@@ -110,9 +110,7 @@ export function HomePage() {
             className="mb-12 text-center lg:text-left"
           >
             <div className="inline-flex items-center gap-3 mb-6 bg-slate-900/30 p-2 pr-6 rounded-full border border-white/10 backdrop-blur-md shadow-lg">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                <span className="text-xl font-bold text-white">CQ</span>
-              </div>
+              <img src="/icons/icon.svg" alt="CQ Logo" className="w-10 h-10 rounded-full shadow-lg shadow-cyan-500/20" />
               <span className="text-slate-300 font-medium tracking-wide">v{__APP_VERSION__}</span>
             </div>
 

@@ -43,9 +43,7 @@ export function LevelSelectPage() {
         <div className="w-full max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <span className="text-lg md:text-xl font-bold text-white">CQ</span>
-              </div>
+              <img src="/icons/icon.svg" alt="CQ Logo" className="w-8 h-8 md:w-10 md:h-10 rounded-lg shadow-lg shadow-blue-500/20" />
             </Link>
             <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
               {t.title}
