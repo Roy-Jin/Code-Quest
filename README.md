@@ -8,7 +8,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Monaco Editor](https://img.shields.io/badge/Monaco_Editor-0078d4?style=for-the-badge&logo=visual-studio-code&logoColor=white)](https://microsoft.github.io/monaco-editor/)
 
-Code Quest is a game designed to teach programming concepts through interactive puzzles.
+An interactive coding adventure game that teaches programming concepts through fun challenges.
 
 [English](README.md) | [中文](README_zh.md)
 

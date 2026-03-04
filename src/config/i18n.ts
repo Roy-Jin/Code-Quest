@@ -42,7 +42,7 @@ export const TRANSLATIONS = {
     settings: "Settings",
     about: "About",
     back: "Back",
-    aboutDesc: "Code Quest is a game designed to teach programming concepts through interactive puzzles.",
+    aboutDesc: "An interactive coding adventure game that teaches programming concepts through fun challenges.",
     settingsDesc: "Configure your game experience.",
     general: "General",
     game: "Game",
@@ -179,6 +179,11 @@ export const TRANSLATIONS = {
     ready: "Ready!",
     letsGo: "Let's go!",
     clickToStart: "Click the button to start your coding journey",
+    // PWA Update
+    newVersionAvailable: "New Version Available",
+    newVersionDesc: "We've found a new version. Refresh the page to get the latest features.",
+    refreshNow: "Refresh Now",
+    later: "Later",
   },
   zh: {
     title: "代码探险",
@@ -218,7 +223,7 @@ export const TRANSLATIONS = {
     settings: "设置",
     about: "关于",
     back: "返回",
-    aboutDesc: "代码探险是一款旨在通过互动谜题教授编程概念的游戏。",
+    aboutDesc: "一个互动编码冒险游戏，通过有趣的挑战教授编程概念。",
     settingsDesc: "配置你的游戏体验。",
     general: "常规",
     game: "游戏",
@@ -355,5 +360,10 @@ export const TRANSLATIONS = {
     ready: "准备就绪！",
     letsGo: "出发吧!",
     clickToStart: "点击按钮开始你的编程之旅",
+    // PWA Update
+    newVersionAvailable: "新版本可用",
+    newVersionDesc: "我们发现了新版本，刷新页面以获取最新功能",
+    refreshNow: "立即刷新",
+    later: "稍后",
   }
 };

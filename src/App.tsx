@@ -6,6 +6,7 @@ import { LevelSelectPage } from './pages/LevelSelectPage';
 import { GamePage } from './pages/GamePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SplashScreen } from './components/SplashScreen';
+import { PwaUpdatePrompt } from './components/PwaUpdatePrompt';
 import { audioManager } from './utils/audioManager';
 import { TRANSLATIONS } from './config';
 import { useStore } from './context/StoreContext';
@@ -52,6 +53,8 @@ function AnimatedRoutes() {
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [audioInitialized, setAudioInitialized] = useState(false);
+  const { settings } = useStore();
+  const t = TRANSLATIONS[settings.language];
 
   useEffect(() => {
     // Preload audio files on app mount
@@ -72,6 +75,11 @@ export default function App() {
     setShowSplash(false);
   };
 
+  const handleRefresh = () => {
+    // Optional: Add any cleanup logic before refresh
+    console.log('Refreshing app...');
+  };
+
   if (showSplash) {
     return <SplashScreen onComplete={handleSplashComplete} />;
   }
@@ -82,6 +90,7 @@ export default function App() {
         <AnimatePresence mode="wait">
           <AnimatedRoutes />
         </AnimatePresence>
+        <PwaUpdatePrompt onRefresh={handleRefresh} t={t} />
       </div>
     </BrowserRouter>
   );

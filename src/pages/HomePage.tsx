@@ -99,7 +99,8 @@ export function HomePage() {
     <PageTransition className="h-screen w-screen bg-slate-950 text-slate-200 font-sans flex flex-col overflow-hidden relative">
       <BackgroundGrid />
 
-      <main className="flex-1 flex flex-col lg:flex-row relative z-10">
+      <div className="flex-1 flex items-center justify-center relative z-10">
+        <main className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row h-full">
         {/* Left Side: Menu */}
         <div className="flex-1 flex flex-col justify-center items-center lg:items-start p-8 lg:pl-24 lg:pr-12 relative z-10">
           <motion.div
@@ -215,7 +216,8 @@ export function HomePage() {
             </motion.div>
           </motion.div>
         </div>
-      </main>
+        </main>
+      </div>
     </PageTransition>
   );
 }
