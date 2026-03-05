@@ -150,7 +150,6 @@ export function HomePage() {
 
             <motion.button
               {...createHoverAnimation(1.02, 0.2)}
-              onClick={() => navigate('/about')}
               className="px-8 py-4 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl font-semibold border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-3 backdrop-blur-md shadow-lg"
             >
               <Info size={20} />
