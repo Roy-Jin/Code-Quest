@@ -15,10 +15,10 @@ interface AudioSettings {
 
 class AudioManager {
   private static instance: AudioManager;
-  
+
   private bgmAudio: HTMLAudioElement | null = null;
   private sfxCache: Map<SoundEffect, HTMLAudioElement> = new Map();
-  
+
   private settings: AudioSettings = {
     musicEnabled: true,
     musicVolume: 40,
@@ -26,8 +26,35 @@ class AudioManager {
     sfxVolume: 60,
   };
 
+  private isPageVisible: boolean = true;
+  private wasPlayingBeforeHidden: boolean = false;
+
   private constructor() {
     // Private constructor for singleton pattern
+    this.initVisibilityListener();
+  }
+
+  /**
+   * Initialize page visibility listener
+   * Pauses audio when page is hidden, resumes when visible
+   */
+  private initVisibilityListener(): void {
+    const handleVisibilityChange = () => {
+      this.isPageVisible = !document.hidden;
+
+      if (document.hidden) {
+        // Page is hidden - pause all audio
+        this.wasPlayingBeforeHidden = this.bgmAudio ? !this.bgmAudio.paused : false;
+        this.pauseBackgroundMusic();
+      } else {
+        // Page is visible again - resume if it was playing before
+        if (this.wasPlayingBeforeHidden) {
+          this.resumeBackgroundMusic();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
   }
 
   /**
@@ -45,13 +72,13 @@ class AudioManager {
    */
   updateSettings(newSettings: Partial<AudioSettings>): void {
     this.settings = { ...this.settings, ...newSettings };
-    
+
     // Update background music volume if it's playing
     if (this.bgmAudio) {
-      this.bgmAudio.volume = this.settings.musicEnabled 
-        ? this.settings.musicVolume / 100 
+      this.bgmAudio.volume = this.settings.musicEnabled
+        ? this.settings.musicVolume / 100
         : 0;
-      
+
       // Pause or resume based on enabled state
       if (this.settings.musicEnabled && this.bgmAudio.paused) {
         this.bgmAudio.play().catch(err => {
@@ -67,7 +94,7 @@ class AudioManager {
    * Initialize and play background music (loops continuously)
    */
   playBackgroundMusic(music: BackgroundMusic = 'bgm'): void {
-    if (!this.settings.musicEnabled) {
+    if (!this.settings.musicEnabled || !this.isPageVisible) {
       return;
     }
 
@@ -83,7 +110,7 @@ class AudioManager {
     }
 
     this.bgmAudio.volume = this.settings.musicVolume / 100;
-    
+
     this.bgmAudio.play().catch(err => {
       console.warn('Failed to play background music:', err);
     });
@@ -112,7 +139,7 @@ class AudioManager {
    * Resume background music
    */
   resumeBackgroundMusic(): void {
-    if (this.bgmAudio && this.bgmAudio.paused && this.settings.musicEnabled) {
+    if (this.bgmAudio && this.bgmAudio.paused && this.settings.musicEnabled && this.isPageVisible) {
       this.bgmAudio.play().catch(err => {
         console.warn('Failed to resume background music:', err);
       });
@@ -123,13 +150,13 @@ class AudioManager {
    * Play a sound effect
    */
   playSoundEffect(effect: SoundEffect): void {
-    if (!this.settings.sfxEnabled) {
+    if (!this.settings.sfxEnabled || !this.isPageVisible) {
       return;
     }
 
     // Get or create audio element for this sound effect
     let audio = this.sfxCache.get(effect);
-    
+
     if (!audio) {
       audio = new Audio(`/${effect}.mp3`);
       this.sfxCache.set(effect, audio);
@@ -138,7 +165,7 @@ class AudioManager {
     // Clone the audio to allow overlapping plays
     const audioClone = audio.cloneNode() as HTMLAudioElement;
     audioClone.volume = this.settings.sfxVolume / 100;
-    
+
     audioClone.play().catch(err => {
       console.warn(`Failed to play sound effect ${effect}:`, err);
     });
@@ -174,6 +201,7 @@ class AudioManager {
     this.sfxCache.clear();
   }
 }
+
 
 // Export singleton instance
 export const audioManager = AudioManager.getInstance();
