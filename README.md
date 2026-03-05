@@ -113,7 +113,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-MIT License
+GPL v3 License
 
 ---
 

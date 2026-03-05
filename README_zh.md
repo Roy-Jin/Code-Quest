@@ -113,7 +113,7 @@ Code-Quest/
 
 ## 📄 许可证
 
-MIT 许可证
+GPL v3 许可证
 
 ---
 
