@@ -5,6 +5,7 @@ import { HomePage } from './pages/HomePage';
 import { LevelSelectPage } from './pages/LevelSelectPage';
 import { GamePage } from './pages/GamePage';
 import { SettingsPage } from './pages/SettingsPage';
+import { AboutPage } from './pages/AboutPage';
 import { SplashScreen } from './components/SplashScreen';
 import { audioManager } from './utils/audioManager';
 import { TRANSLATIONS } from './config';
@@ -27,6 +28,7 @@ function AnimatedRoutes() {
       <Route path="/levels" element={<LevelSelectPage />} />
       <Route path="/game/:levelId" element={<GamePage />} />
       <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/about" element={<AboutPage />} />
       {isDev && LevelEditorPage && (
         <Route 
           path="/editor" 
