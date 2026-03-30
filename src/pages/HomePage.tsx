@@ -8,7 +8,7 @@ import { GameGrid } from '../components/GameGrid';
 import { PageTransition } from '../components/PageTransition';
 import { useStore } from '../context/StoreContext';
 import { Direction, LevelConfig, Position } from '../types';
-import { audioManager } from '../utils/audioManager';
+import { bgm, sfx } from '../utils';
 import DemoLevel from '../config/levels/DemoLevel.json';
 
 export function HomePage() {
@@ -82,7 +82,7 @@ export function HomePage() {
       const coin = coinMap.get(key);
       if (coin && !collectedCoins.has(key)) {
         collectedCoins.add(key);
-        audioManager.playSoundEffect("coinGet");
+        sfx.play("coinGet");
         setDemoScore(prev => prev + (coin.tier === 1 ? 1 : 0));
         setDemoVisibleCoins(prev => {
           const newMap = new Map(prev);

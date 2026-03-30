@@ -7,9 +7,9 @@ import { GamePage } from './pages/GamePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AboutPage } from './pages/AboutPage';
 import { SplashScreen } from './components/SplashScreen';
-import { audioManager } from './utils/audioManager';
 import { TRANSLATIONS } from './config';
 import { useStore } from './context/StoreContext';
+import { bgm, sfx } from './utils';
 
 // Lazy load editor only in dev mode
 const LevelEditorPage = import.meta.env.DEV 
@@ -60,8 +60,6 @@ export default function App() {
   const t = TRANSLATIONS[settings.language];
 
   useEffect(() => {
-    // Preload audio files on app mount
-    audioManager.preloadAudio();
     
     // Check for PWA updates during splash screen
     if ('serviceWorker' in navigator) {
@@ -113,14 +111,15 @@ export default function App() {
     
     // Cleanup on unmount
     return () => {
-      audioManager.cleanup();
+      bgm.destroy();
+      sfx.destroy();
     };
   }, []);
 
   const handleSplashComplete = () => {
     // User interaction occurred, now we can play audio
     if (!audioInitialized) {
-      audioManager.playBackgroundMusic();
+      bgm.play('bgm')
       setAudioInitialized(true);
     }
     setShowSplash(false);

@@ -3,7 +3,7 @@ import * as Babel from '@babel/standalone';
 // @ts-ignore
 import Interpreter from 'js-interpreter';
 import { Position, LevelConfig, Direction, GameState, CoinSystem, Coin, CoinTier, apiConfigToCommands } from '../types';
-import { audioManager } from '../utils/audioManager';
+import { bgm, sfx } from '../utils';
 
 const getInitialRotation = (dir: Direction) => {
   if (dir === 'N') return 0;
@@ -135,7 +135,7 @@ export function useGameEngine(levelConfig: LevelConfig, t: any, onSuccess: () =>
                   setLogs((prev: string[]) => [...prev, `Coin collected! +${points} points (Total: ${gameState.score})`]);
                   
                   // Play coin collection sound effect
-                  audioManager.playSoundEffect('coinGet');
+                  sfx.play('coinGet');
                 }
               }
               

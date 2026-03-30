@@ -7,7 +7,7 @@ import {
   DEFAULT_PROGRESS, 
   DEFAULT_STORE_STATE 
 } from '../config/defaultSettings';
-import { audioManager } from '../utils/audioManager';
+import { bgm, sfx } from '../utils';
 
 interface StoreContextType {
   settings: Settings;
@@ -50,14 +50,15 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, [state]);
 
-  // Sync audio settings with audioManager
   useEffect(() => {
-    audioManager.updateSettings({
-      musicEnabled: state.settings.musicEnabled,
-      musicVolume: state.settings.musicVolume,
-      sfxEnabled: state.settings.sfxEnabled,
-      sfxVolume: state.settings.sfxVolume,
-    });
+    bgm.config.enable = state.settings.musicEnabled;
+    bgm.config.volume = state.settings.musicVolume / 100;
+    sfx.config.enable = state.settings.sfxEnabled;
+    sfx.config.volume = state.settings.sfxVolume / 100;
+
+    if (state.settings.musicEnabled && bgm.paused) {
+      bgm.play("bgm");
+    }
   }, [
     state.settings.musicEnabled,
     state.settings.musicVolume,

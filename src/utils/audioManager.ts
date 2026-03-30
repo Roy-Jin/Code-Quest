@@ -3,205 +3,22 @@
  * Manages background music and sound effects with volume control
  */
 
-export type SoundEffect = 'coinGet';
-export type BackgroundMusic = 'bgm';
+import { BGM, SFX } from "webaudiokit";
 
-interface AudioSettings {
-  musicEnabled: boolean;
-  musicVolume: number;
-  sfxEnabled: boolean;
-  sfxVolume: number;
-}
+const bgm = new BGM({
+  volume: 0.4,
+  stopOnHidden: true,
+  loop: true,
+  preload: true,
+});
 
-class AudioManager {
-  private static instance: AudioManager;
+const sfx = new SFX({
+  volume: 0.6,
+  stopOnHidden: true,
+  preload: true,
+});
 
-  private bgmAudio: HTMLAudioElement | null = null;
-  private sfxCache: Map<SoundEffect, HTMLAudioElement> = new Map();
+bgm.load("bgm", "/bgm.mp3");
+sfx.load("coinGet", "/coinGet.mp3");
 
-  private settings: AudioSettings = {
-    musicEnabled: true,
-    musicVolume: 40,
-    sfxEnabled: true,
-    sfxVolume: 60,
-  };
-
-  private isPageVisible: boolean = true;
-  private wasPlayingBeforeHidden: boolean = false;
-
-  private constructor() {
-    // Private constructor for singleton pattern
-    this.initVisibilityListener();
-  }
-
-  /**
-   * Initialize page visibility listener
-   * Pauses audio when page is hidden, resumes when visible
-   */
-  private initVisibilityListener(): void {
-    const handleVisibilityChange = () => {
-      this.isPageVisible = !document.hidden;
-
-      if (document.hidden) {
-        // Page is hidden - pause all audio
-        this.wasPlayingBeforeHidden = this.bgmAudio ? !this.bgmAudio.paused : false;
-        this.pauseBackgroundMusic();
-      } else {
-        // Page is visible again - resume if it was playing before
-        if (this.wasPlayingBeforeHidden) {
-          this.resumeBackgroundMusic();
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-  }
-
-  /**
-   * Get the singleton instance of AudioManager
-   */
-  static getInstance(): AudioManager {
-    if (!AudioManager.instance) {
-      AudioManager.instance = new AudioManager();
-    }
-    return AudioManager.instance;
-  }
-
-  /**
-   * Update audio settings
-   */
-  updateSettings(newSettings: Partial<AudioSettings>): void {
-    this.settings = { ...this.settings, ...newSettings };
-
-    // Update background music volume if it's playing
-    if (this.bgmAudio) {
-      this.bgmAudio.volume = this.settings.musicEnabled
-        ? this.settings.musicVolume / 100
-        : 0;
-
-      // Pause or resume based on enabled state
-      if (this.settings.musicEnabled && this.bgmAudio.paused) {
-        this.bgmAudio.play().catch(err => {
-          console.warn('Failed to resume background music:', err);
-        });
-      } else if (!this.settings.musicEnabled && !this.bgmAudio.paused) {
-        this.bgmAudio.pause();
-      }
-    }
-  }
-
-  /**
-   * Initialize and play background music (loops continuously)
-   */
-  playBackgroundMusic(music: BackgroundMusic = 'bgm'): void {
-    if (!this.settings.musicEnabled || !this.isPageVisible) {
-      return;
-    }
-
-    // If already playing the same music, don't restart
-    if (this.bgmAudio && !this.bgmAudio.paused) {
-      return;
-    }
-
-    // Create audio element if it doesn't exist
-    if (!this.bgmAudio) {
-      this.bgmAudio = new Audio(`/${music}.mp3`);
-      this.bgmAudio.loop = true;
-    }
-
-    this.bgmAudio.volume = this.settings.musicVolume / 100;
-
-    this.bgmAudio.play().catch(err => {
-      console.warn('Failed to play background music:', err);
-    });
-  }
-
-  /**
-   * Stop background music
-   */
-  stopBackgroundMusic(): void {
-    if (this.bgmAudio && !this.bgmAudio.paused) {
-      this.bgmAudio.pause();
-      this.bgmAudio.currentTime = 0;
-    }
-  }
-
-  /**
-   * Pause background music (can be resumed)
-   */
-  pauseBackgroundMusic(): void {
-    if (this.bgmAudio && !this.bgmAudio.paused) {
-      this.bgmAudio.pause();
-    }
-  }
-
-  /**
-   * Resume background music
-   */
-  resumeBackgroundMusic(): void {
-    if (this.bgmAudio && this.bgmAudio.paused && this.settings.musicEnabled && this.isPageVisible) {
-      this.bgmAudio.play().catch(err => {
-        console.warn('Failed to resume background music:', err);
-      });
-    }
-  }
-
-  /**
-   * Play a sound effect
-   */
-  playSoundEffect(effect: SoundEffect): void {
-    if (!this.settings.sfxEnabled || !this.isPageVisible) {
-      return;
-    }
-
-    // Get or create audio element for this sound effect
-    let audio = this.sfxCache.get(effect);
-
-    if (!audio) {
-      audio = new Audio(`/${effect}.mp3`);
-      this.sfxCache.set(effect, audio);
-    }
-
-    // Clone the audio to allow overlapping plays
-    const audioClone = audio.cloneNode() as HTMLAudioElement;
-    audioClone.volume = this.settings.sfxVolume / 100;
-
-    audioClone.play().catch(err => {
-      console.warn(`Failed to play sound effect ${effect}:`, err);
-    });
-  }
-
-  /**
-   * Preload audio files for better performance
-   */
-  preloadAudio(): void {
-    // Preload background music
-    if (!this.bgmAudio) {
-      this.bgmAudio = new Audio('/bgm.mp3');
-      this.bgmAudio.loop = true;
-      this.bgmAudio.volume = this.settings.musicVolume / 100;
-    }
-
-    // Preload sound effects
-    const effects: SoundEffect[] = ['coinGet'];
-    effects.forEach(effect => {
-      if (!this.sfxCache.has(effect)) {
-        const audio = new Audio(`/${effect}.mp3`);
-        this.sfxCache.set(effect, audio);
-      }
-    });
-  }
-
-  /**
-   * Clean up audio resources
-   */
-  cleanup(): void {
-    this.stopBackgroundMusic();
-    this.bgmAudio = null;
-    this.sfxCache.clear();
-  }
-}
-
-
-// Export singleton instance
-export const audioManager = AudioManager.getInstance();
+export { bgm, sfx };
