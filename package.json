@@ -21,7 +21,7 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.1",
-    "webaudiokit": "^1.1.0"
+    "webaudiokit": "^1.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
