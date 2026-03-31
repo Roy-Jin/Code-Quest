@@ -13,12 +13,10 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "prompt",
-      injectRegister: "inline",
+      injectRegister: "auto",
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,mp3}"],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
-        clientsClaim: true,
-        skipWaiting: false,
       },
       includeAssets: ["favicon.ico", "icons/*.svg"],
       manifest: {

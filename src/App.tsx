@@ -7,6 +7,7 @@ import { GamePage } from './pages/GamePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AboutPage } from './pages/AboutPage';
 import { SplashScreen } from './components/SplashScreen';
+import { PwaReloadPrompt } from './components/PwaReloadPrompt';
 import { TRANSLATIONS } from './config';
 import { useStore } from './context/StoreContext';
 import { bgm, sfx } from './utils';
@@ -54,67 +55,7 @@ function AnimatedRoutes() {
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [audioInitialized, setAudioInitialized] = useState(false);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
-  const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
   const { settings } = useStore();
-  const t = TRANSLATIONS[settings.language];
-
-  useEffect(() => {
-    
-    // Check for PWA updates during splash screen
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then((reg) => {
-        setRegistration(reg);
-
-        // Check if there's already a waiting service worker
-        if (reg.waiting) {
-          setUpdateAvailable(true);
-          console.log('Update already waiting!');
-        }
-
-        // Listen for updates
-        const handleUpdateFound = () => {
-          const newWorker = reg.installing;
-          if (!newWorker) return;
-
-          const handleStateChange = () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              setUpdateAvailable(true);
-              console.log('New version available!');
-            }
-          };
-
-          newWorker.addEventListener('statechange', handleStateChange);
-        };
-
-        reg.addEventListener('updatefound', handleUpdateFound);
-
-        // Check for updates immediately
-        reg.update();
-      });
-
-      // Listen for controller change (when new SW takes over)
-      let refreshing = false;
-      const handleControllerChange = () => {
-        if (!refreshing) {
-          refreshing = true;
-          window.location.reload();
-        }
-      };
-      
-      navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
-
-      return () => {
-        navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
-      };
-    }
-    
-    // Cleanup on unmount
-    return () => {
-      bgm.destroy();
-      sfx.destroy();
-    };
-  }, []);
 
   const handleSplashComplete = () => {
     // User interaction occurred, now we can play audio
@@ -125,24 +66,8 @@ export default function App() {
     setShowSplash(false);
   };
 
-  const handleUpdate = () => {
-    if (registration?.waiting) {
-      // Tell the waiting service worker to skip waiting
-      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    } else {
-      // Fallback: just reload
-      window.location.reload();
-    }
-  };
-
   if (showSplash) {
-    return (
-      <SplashScreen 
-        onComplete={handleSplashComplete}
-        updateAvailable={updateAvailable}
-        onUpdate={handleUpdate}
-      />
-    );
+    return <SplashScreen onComplete={handleSplashComplete} />;
   }
 
   return (
@@ -151,6 +76,7 @@ export default function App() {
         <AnimatePresence mode="wait">
           <AnimatedRoutes />
         </AnimatePresence>
+        <PwaReloadPrompt />
       </div>
     </BrowserRouter>
   );
