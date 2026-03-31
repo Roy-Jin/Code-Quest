@@ -344,7 +344,7 @@ export function SettingsPage() {
                     {updatePending && (
                       <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
                         <p className="text-sm text-amber-400">
-                          {t.updateOnRestart || 'Update ready! Refresh the page to apply the latest version.'}
+                          {t.updateOnRestart}
                         </p>
                       </div>
                     )}
@@ -354,7 +354,7 @@ export function SettingsPage() {
                       className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
                     >
                       <RefreshCw size={18} className={isCheckingUpdate ? 'animate-spin' : ''} />
-                      {isCheckingUpdate ? (t.checkingForUpdates || 'Checking...') : (t.checkForUpdates || 'Check for Updates')}
+                      {isCheckingUpdate ? t.checkingForUpdates : t.checkForUpdates}
                     </button>
                     {updateCheckMessage && (
                       <motion.div

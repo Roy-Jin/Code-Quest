@@ -43,7 +43,7 @@ export function PwaReloadPrompt() {
                     {t.newVersionAvailable}
                   </h2>
                   <p className="text-amber-100 text-xs mt-0.5">
-                    {settings.language === 'zh' ? '更新已下载完成，刷新页面即可应用' : 'Update downloaded! Refresh to apply'}
+                    {t.newVersionAvailableText}
                   </p>
                 </div>
               </div>
@@ -57,7 +57,7 @@ export function PwaReloadPrompt() {
                 onClick={reload}
                 className="flex-1 px-4 py-2 bg-linear-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white rounded-lg font-medium text-sm shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 transition-all"
               >
-                {t.updateNow}
+                {t.restartNow}
               </motion.button>
               
               <motion.button
