@@ -14,7 +14,8 @@ import {
   Globe,
   Menu,
   X,
-  Target
+  Target,
+  Download
 } from 'lucide-react';
 import { TooltipButton } from '../components/TooltipButton';
 import { BackgroundGrid } from '../components/BackgroundGrid';
@@ -23,10 +24,12 @@ import { TRANSLATIONS, LANGUAGE_NAMES } from '../config';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useStore } from '../context/StoreContext';
 import { CustomSelect } from '../components/CustomSelect';
+import { usePwaUpdate } from '../hooks/usePwaUpdate';
 
 export function SettingsPage() {
   const navigate = useNavigate();
   const { settings, updateSettings, resetSettings, resetProgress, resetAll } = useStore();
+  const { updatePending, needRefresh, checkForUpdate } = usePwaUpdate();
   
   const t = TRANSLATIONS[settings.language];
 
@@ -34,6 +37,9 @@ export function SettingsPage() {
   const [activeSection, setActiveSection] = useState('general');
   const contentRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<Record<string, HTMLElement | null>>({});
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
+  const [updateCheckMessage, setUpdateCheckMessage] = useState('');
+  const [updateCheckStatus, setUpdateCheckStatus] = useState<'idle' | 'checking' | 'found' | 'not-found'>('idle');
 
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
@@ -52,6 +58,34 @@ export function SettingsPage() {
   const handleSetLang = (newLang: 'en' | 'zh') => {
     updateSettings({ language: newLang });
   };
+
+  const handleCheckForUpdates = async () => {
+    setIsCheckingUpdate(true);
+    setUpdateCheckMessage('');
+    setUpdateCheckStatus('checking');
+    
+    try {
+      const hasUpdate = await checkForUpdate();
+      
+      setTimeout(() => {
+        setIsCheckingUpdate(false);
+        if (hasUpdate || needRefresh) {
+          setUpdateCheckStatus('found');
+          setUpdateCheckMessage(settings.language === 'zh' ? '更新已下载！刷新页面即可应用' : 'Update downloaded! Refresh to apply');
+        } else {
+          setUpdateCheckStatus('not-found');
+          setUpdateCheckMessage(t.noUpdatesAvailable || 'You are using the latest version.');
+        }
+      }, 1000);
+    } catch (error) {
+      setIsCheckingUpdate(false);
+      setUpdateCheckStatus('not-found');
+      setUpdateCheckMessage(t.noUpdatesAvailable || 'You are using the latest version.');
+    }
+  };
+
+  const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                (window.navigator as any).standalone === true;
 
   const handleResetProgress = () => {
     setConfirmDialog({
@@ -272,6 +306,8 @@ export function SettingsPage() {
                 <Monitor size={24} className="text-blue-400" />
                 {t.general}
               </h2>
+              
+              {/* Language Settings */}
               <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
                 <h2 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
                   <Globe size={20} className="text-blue-400" />
@@ -296,6 +332,50 @@ export function SettingsPage() {
                   ))}
                 </div>
               </div>
+
+              {/* PWA Update Check - Only show in PWA mode */}
+              {isPWA && (
+                <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+                  <h2 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
+                    <Download size={20} className="text-blue-400" />
+                    {t.checkForUpdates}
+                  </h2>
+                  <div className="space-y-3">
+                    {updatePending && (
+                      <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                        <p className="text-sm text-amber-400">
+                          {t.updateOnRestart || 'Update ready! Refresh the page to apply the latest version.'}
+                        </p>
+                      </div>
+                    )}
+                    <button
+                      onClick={handleCheckForUpdates}
+                      disabled={isCheckingUpdate}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
+                    >
+                      <RefreshCw size={18} className={isCheckingUpdate ? 'animate-spin' : ''} />
+                      {isCheckingUpdate ? (t.checkingForUpdates || 'Checking...') : (t.checkForUpdates || 'Check for Updates')}
+                    </button>
+                    {updateCheckMessage && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`p-3 rounded-lg ${
+                          updateCheckStatus === 'found' 
+                            ? 'bg-amber-500/10 border border-amber-500/20' 
+                            : 'bg-green-500/10 border border-green-500/20'
+                        }`}
+                      >
+                        <p className={`text-sm text-center ${
+                          updateCheckStatus === 'found' ? 'text-amber-400' : 'text-green-400'
+                        }`}>
+                          {updateCheckMessage}
+                        </p>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+              )}
             </motion.section>
 
             {/* Game Settings */}

@@ -35,7 +35,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
     const newLang = settings.language === 'zh' ? 'en' : 'zh';
     updateSettings({ language: newLang });
     
-    // 重置动画
+    // Reset animation
     setProgress(0);
     setShowButton(false);
     setAnimationKey(prev => prev + 1);
