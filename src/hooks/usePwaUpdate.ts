@@ -55,22 +55,27 @@ export function usePwaUpdate() {
         registrationRef.current = registration
         await registration.update()
         
-        // Wait a bit to see if an update was found
+        // Wait longer and check more frequently for updates
         return new Promise((resolve) => {
           const timeout = setTimeout(() => {
             resolve(false)
-          }, 2000)
+          }, 5000) // Increased from 2s to 5s
 
-          const checkUpdate = () => {
+          // Check every 500ms for updates
+          const interval = setInterval(() => {
             if (needRefresh) {
               clearTimeout(timeout)
+              clearInterval(interval)
               resolve(true)
             }
-          }
+          }, 500)
 
-          // Check immediately and after a short delay
-          checkUpdate()
-          setTimeout(checkUpdate, 1000)
+          // Also check immediately
+          if (needRefresh) {
+            clearTimeout(timeout)
+            clearInterval(interval)
+            resolve(true)
+          }
         })
       }
       return false

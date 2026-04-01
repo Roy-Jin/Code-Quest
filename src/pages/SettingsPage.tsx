@@ -71,16 +71,16 @@ export function SettingsPage() {
         setIsCheckingUpdate(false);
         if (hasUpdate || needRefresh) {
           setUpdateCheckStatus('found');
-          setUpdateCheckMessage(settings.language === 'zh' ? '更新已下载！刷新页面即可应用' : 'Update downloaded! Refresh to apply');
+          setUpdateCheckMessage(t.updateDownloaded);
         } else {
           setUpdateCheckStatus('not-found');
-          setUpdateCheckMessage(t.noUpdatesAvailable || 'You are using the latest version.');
+          setUpdateCheckMessage(t.noUpdatesAvailable);
         }
       }, 1000);
     } catch (error) {
       setIsCheckingUpdate(false);
       setUpdateCheckStatus('not-found');
-      setUpdateCheckMessage(t.noUpdatesAvailable || 'You are using the latest version.');
+      setUpdateCheckMessage(t.noUpdatesAvailable);
     }
   };
 
@@ -91,7 +91,7 @@ export function SettingsPage() {
     setConfirmDialog({
       isOpen: true,
       title: t.resetProgress,
-      message: t.resetProgressConfirm || 'Are you sure you want to reset all game progress? This action cannot be undone.',
+      message: t.resetProgressConfirm,
       type: 'danger',
       onConfirm: () => {
         resetProgress();
@@ -104,7 +104,7 @@ export function SettingsPage() {
     setConfirmDialog({
       isOpen: true,
       title: t.restoreDefaults,
-      message: t.restoreDefaultsConfirm || 'Are you sure you want to restore default settings?',
+      message: t.restoreDefaultsConfirm,
       type: 'warning',
       onConfirm: () => {
         resetSettings();
@@ -344,7 +344,7 @@ export function SettingsPage() {
                     {updatePending && (
                       <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
                         <p className="text-sm text-amber-400">
-                          {t.updateOnRestart}
+                          {t.restartToUpdate}
                         </p>
                       </div>
                     )}

@@ -40,10 +40,10 @@ export function PwaReloadPrompt() {
                 </motion.div>
                 <div>
                   <h2 className="text-base font-bold text-white">
-                    {t.newVersionAvailable}
+                    {t.updateAvailable}
                   </h2>
                   <p className="text-amber-100 text-xs mt-0.5">
-                    {t.newVersionAvailableText}
+                    {t.updateDownloaded}
                   </p>
                 </div>
               </div>
