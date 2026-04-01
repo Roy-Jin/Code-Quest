@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
 export function usePwaUpdate() {
+  // Always register Service Worker for PWA updates in all environments
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker
@@ -22,6 +23,7 @@ export function usePwaUpdate() {
   const [showReloadPrompt, setShowReloadPrompt] = useState(false)
   const [updatePending, setUpdatePending] = useState(false)
   const registrationRef = useRef<ServiceWorkerRegistration | null>(null)
+  const needRefreshRef = useRef(needRefresh)
 
   // Store registration reference
   useEffect(() => {
@@ -31,6 +33,11 @@ export function usePwaUpdate() {
       }
     })
   }, [])
+
+  // Update needRefresh ref when needRefresh changes
+  useEffect(() => {
+    needRefreshRef.current = needRefresh
+  }, [needRefresh])
 
   useEffect(() => {
     if (needRefresh) {
@@ -53,6 +60,12 @@ export function usePwaUpdate() {
       const registration = registrationRef.current || await navigator.serviceWorker?.getRegistration()
       if (registration) {
         registrationRef.current = registration
+        
+        // Check immediately if update is already available
+        if (needRefreshRef.current) {
+          return true
+        }
+        
         await registration.update()
         
         // Wait longer and check more frequently for updates
@@ -63,15 +76,15 @@ export function usePwaUpdate() {
 
           // Check every 500ms for updates
           const interval = setInterval(() => {
-            if (needRefresh) {
+            if (needRefreshRef.current) {
               clearTimeout(timeout)
               clearInterval(interval)
               resolve(true)
             }
           }, 500)
 
-          // Also check immediately
-          if (needRefresh) {
+          // Also check immediately (in case needRefresh changed during await)
+          if (needRefreshRef.current) {
             clearTimeout(timeout)
             clearInterval(interval)
             resolve(true)

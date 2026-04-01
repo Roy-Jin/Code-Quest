@@ -1,1 +1,1 @@
-export { bgm, sfx } from './audioManager';
+export { bgm, sfx } from "./audioManager";

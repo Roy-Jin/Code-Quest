@@ -29,7 +29,7 @@ import { usePwaUpdate } from '../hooks/usePwaUpdate';
 export function SettingsPage() {
   const navigate = useNavigate();
   const { settings, updateSettings, resetSettings, resetProgress, resetAll } = useStore();
-  const { updatePending, needRefresh, checkForUpdate } = usePwaUpdate();
+  const { updatePending, needRefresh, checkForUpdate, reload } = usePwaUpdate();
   
   const t = TRANSLATIONS[settings.language];
 
@@ -67,16 +67,14 @@ export function SettingsPage() {
     try {
       const hasUpdate = await checkForUpdate();
       
-      setTimeout(() => {
-        setIsCheckingUpdate(false);
-        if (hasUpdate || needRefresh) {
-          setUpdateCheckStatus('found');
-          setUpdateCheckMessage(t.updateDownloaded);
-        } else {
-          setUpdateCheckStatus('not-found');
-          setUpdateCheckMessage(t.noUpdatesAvailable);
-        }
-      }, 1000);
+      setIsCheckingUpdate(false);
+      if (hasUpdate || needRefresh) {
+        setUpdateCheckStatus('found');
+        setUpdateCheckMessage(t.updateDownloaded);
+      } else {
+        setUpdateCheckStatus('not-found');
+        setUpdateCheckMessage(t.noUpdatesAvailable);
+      }
     } catch (error) {
       setIsCheckingUpdate(false);
       setUpdateCheckStatus('not-found');
@@ -84,8 +82,11 @@ export function SettingsPage() {
     }
   };
 
-  const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                (window.navigator as any).standalone === true;
+  const handleRestartApp = async () => {
+    await reload();
+  };
+
+
 
   const handleResetProgress = () => {
     setConfirmDialog({
@@ -333,49 +334,58 @@ export function SettingsPage() {
                 </div>
               </div>
 
-              {/* PWA Update Check - Only show in PWA mode */}
-              {isPWA && (
-                <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
-                  <h2 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
-                    <Download size={20} className="text-blue-400" />
-                    {t.checkForUpdates}
-                  </h2>
-                  <div className="space-y-3">
-                    {updatePending && (
-                      <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                        <p className="text-sm text-amber-400">
-                          {t.restartToUpdate}
-                        </p>
-                      </div>
-                    )}
-                    <button
-                      onClick={handleCheckForUpdates}
-                      disabled={isCheckingUpdate}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
+              {/* PWA Update Check */}
+              <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+                <h2 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
+                  <Download size={20} className="text-blue-400" />
+                  {t.checkForUpdates}
+                </h2>
+                <div className="space-y-3">
+                  {updatePending && (
+                    <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                      <p className="text-sm text-amber-400">
+                        {t.restartToUpdate}
+                      </p>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleCheckForUpdates}
+                    disabled={isCheckingUpdate}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
+                  >
+                    <RefreshCw size={18} className={isCheckingUpdate ? 'animate-spin' : ''} />
+                    {isCheckingUpdate ? t.checkingForUpdates : t.checkForUpdates}
+                  </button>
+                  {updateCheckMessage && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`p-3 rounded-lg ${
+                        updateCheckStatus === 'found' 
+                          ? 'bg-amber-500/10 border border-amber-500/20' 
+                          : 'bg-green-500/10 border border-green-500/20'
+                      }`}
                     >
-                      <RefreshCw size={18} className={isCheckingUpdate ? 'animate-spin' : ''} />
-                      {isCheckingUpdate ? t.checkingForUpdates : t.checkForUpdates}
-                    </button>
-                    {updateCheckMessage && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={`p-3 rounded-lg ${
-                          updateCheckStatus === 'found' 
-                            ? 'bg-amber-500/10 border border-amber-500/20' 
-                            : 'bg-green-500/10 border border-green-500/20'
-                        }`}
-                      >
-                        <p className={`text-sm text-center ${
-                          updateCheckStatus === 'found' ? 'text-amber-400' : 'text-green-400'
-                        }`}>
-                          {updateCheckMessage}
-                        </p>
-                      </motion.div>
-                    )}
-                  </div>
+                      <p className={`text-sm text-center ${
+                        updateCheckStatus === 'found' ? 'text-amber-400' : 'text-green-400'
+                      }`}>
+                        {updateCheckMessage}
+                      </p>
+                    </motion.div>
+                  )}
+                  {(updatePending || updateCheckStatus === 'found') && (
+                    <motion.button
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      onClick={handleRestartApp}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-medium transition-colors"
+                    >
+                      <RefreshCw size={18} />
+                      {t.restartNow}
+                    </motion.button>
+                  )}
                 </div>
-              )}
+              </div>
             </motion.section>
 
             {/* Game Settings */}
